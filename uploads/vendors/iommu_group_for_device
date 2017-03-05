@@ -1,0 +1,13 @@
+#!/bin/bash
+BASE="/sys/kernel/iommu_groups"
+for i in $(find $BASE -maxdepth 1 -mindepth 1 -type d); do
+	GROUP=$(basename $i)
+	for j in $(find $i/devices -type l); do
+	 DEV=$(basename $j)
+	 if [ $DEV == $1 ]; then
+	  echo "$GROUP"
+	  exit 0
+	 fi
+	done
+done
+exit 1 # no group found

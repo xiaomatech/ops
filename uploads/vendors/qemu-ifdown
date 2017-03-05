@@ -1,0 +1,4 @@
+#!/bin/bash
+tap_device=$1
+ovs-vsctl --if-exist del-port br0 $tap_device
+#ovs-vsctl -- destroy QoS newqos -- clear Port tap0 qos

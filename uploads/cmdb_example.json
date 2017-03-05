@@ -1,0 +1,18 @@
+[
+  {
+    "type":"server",
+    "room":"gz",
+    "rack":"C11",
+    "seat":"13",
+    "ip":"10.3.133.20",
+    "remarks":"test"
+  },
+  {
+    "type":"server",
+    "room":"wx",
+    "rack":"B1",
+    "seat":"16",
+    "ip":"10.3.133.28",
+    "remarks":"wx_test"
+  }
+]

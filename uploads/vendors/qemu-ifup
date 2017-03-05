@@ -1,0 +1,8 @@
+#!/bin/bash
+# NOTE: $1 is tapx
+tap_device=$1
+ovs-vsctl --may-exist add-port br0 $tap_device
+ovs-vsctl -- set Port $tap_device qos=@newqos \
+	-- --id=@newqos create qos type=linux-htb other-config:max-rate=100000000 #queues:0=@q0 \
+#	-- --id=@q0 create queue other-config:min-rate=100000000 other-config:max-rate=100000000
+ip link set up tap0

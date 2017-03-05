@@ -1,0 +1,20 @@
+#!/bin/bash
+
+modprobe vfio-pci
+
+DEVICES="0000:01:00.0 0000:01:00.1"
+
+for dev in "$DEVICES"; do
+  if lspci -k -s $dev | grep -lq vfio-pci ; then
+    echo "$dev already bound, skipping..."
+    continue
+  fi
+  vendor=$(cat /sys/bus/pci/devices/$dev/vendor)
+  device=$(cat /sys/bus/pci/devices/$dev/device)
+  if [ -e /sys/bus/pci/devices/$dev/driver ]; then
+    echo $dev > /sys/bus/pci/devices/$dev/driver/unbind
+    echo $dev > /sys/bus/pci/drivers/vfio-pci/bind
+  fi
+  echo $vendor $device > /sys/bus/pci/drivers/vfio-pci/new_id
+  #chown libvirt-qemu:kvm /dev/vfio/$group
+done

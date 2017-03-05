@@ -1,0 +1,717 @@
+#!/usr/bin/python
+# -*- coding:utf8 -*-
+
+server_url = "http://127.0.0.1:8000"
+feedback_url = 'http://127.0.0.1:8000/feedback'
+host_info_url = 'http://127.0.0.1:8000/cmdb/hostinfo'
+host_info_file = '/etc/host_info.json'
+etcd_list = ['10.3.138.23:4001']
+etcd_prefix = '/ops'
+script_path = '/opt/scripts'
+pidfile = "/var/run/ops.pid"
+client_log_file = '/var/log/ops.log'
+
+import os
+import urllib2
+import urllib
+import subprocess
+import datetime
+import re
+import logging
+import sys
+import struct
+import tempfile
+import threading
+import getopt
+import socket
+import time
+import itertools
+import mimetools
+import mimetypes
+from cStringIO import StringIO
+from logging.handlers import RotatingFileHandler
+import random
+import json
+import signal
+import atexit
+import md5
+
+logger = logging.getLogger()
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)-25s %(module)s:%(lineno)d  %(levelname)-8s %(message)s',
+    filename=client_log_file,
+    filemode='a')
+logger.addHandler(
+    RotatingFileHandler(
+        filename=client_log_file,
+        maxBytes=104857600,  # 100m
+        backupCount=3))
+
+
+class Daemon(object):
+    def __init__(self,
+                 pidfile=pidfile,
+                 stdin=os.devnull,
+                 stdout=os.devnull,
+                 stderr=os.devnull,
+                 home_dir='.',
+                 umask=022,
+                 verbose=1,
+                 use_gevent=False):
+        self.stdin = stdin
+        self.stdout = stdout
+        self.stderr = stderr
+        self.pidfile = pidfile
+        self.home_dir = home_dir
+        self.verbose = verbose
+        self.umask = umask
+        self.daemon_alive = True
+        self.use_gevent = use_gevent
+
+    def daemonize(self):
+        try:
+            pid = os.fork()
+            if pid > 0:
+                sys.exit(0)
+        except OSError, e:
+            sys.stderr.write("fork #1 failed: %d (%s)\n" %
+                             (e.errno, e.strerror))
+            sys.exit(1)
+
+        os.chdir(self.home_dir)
+        os.setsid()
+        os.umask(self.umask)
+
+        try:
+            pid = os.fork()
+            if pid > 0:
+                sys.exit(0)
+        except OSError, e:
+            sys.stderr.write("fork #2 failed: %d (%s)\n" %
+                             (e.errno, e.strerror))
+            sys.exit(1)
+
+        if sys.platform != 'darwin':
+            sys.stdout.flush()
+            sys.stderr.flush()
+            si = file(self.stdin, 'r')
+            so = file(self.stdout, 'a+')
+            if self.stderr:
+                se = file(self.stderr, 'a+', 0)
+            else:
+                se = so
+            os.dup2(si.fileno(), sys.stdin.fileno())
+            os.dup2(so.fileno(), sys.stdout.fileno())
+            os.dup2(se.fileno(), sys.stderr.fileno())
+
+        def sigtermhandler(signum, frame):
+            self.daemon_alive = False
+            sys.exit()
+
+        if self.use_gevent:
+            import gevent
+            gevent.reinit()
+            gevent.signal(signal.SIGTERM, sigtermhandler, signal.SIGTERM, None)
+            gevent.signal(signal.SIGINT, sigtermhandler, signal.SIGINT, None)
+        else:
+            signal.signal(signal.SIGTERM, sigtermhandler)
+            signal.signal(signal.SIGINT, sigtermhandler)
+
+        if self.verbose >= 1:
+            print "Started"
+
+        atexit.register(self.delpid)
+        pid = str(os.getpid())
+        file(self.pidfile, 'w+').write("%s\n" % pid)
+
+    def delpid(self):
+        os.remove(self.pidfile)
+
+    def start(self, *args, **kwargs):
+        if self.verbose >= 1:
+            print "Starting..."
+
+        try:
+            pf = file(self.pidfile, 'r')
+            pid = int(pf.read().strip())
+            pf.close()
+        except IOError:
+            pid = None
+        except SystemExit:
+            pid = None
+
+        if pid:
+            message = "pidfile %s already exists. Is it already running?\n"
+            sys.stderr.write(message % self.pidfile)
+            sys.exit(1)
+        self.daemonize()
+        self.run(*args, **kwargs)
+
+    def stop(self):
+        if self.verbose >= 1:
+            print "Stopping..."
+
+        # Get the pid from the pidfile
+        pid = self.get_pid()
+
+        if not pid:
+            message = "pidfile %s does not exist. Not running?\n"
+            sys.stderr.write(message % self.pidfile)
+
+            # Just to be sure. A ValueError might occur if the PID file is
+            # empty but does actually exist
+            if os.path.exists(self.pidfile):
+                os.remove(self.pidfile)
+            return
+
+        try:
+            i = 0
+            while 1:
+                os.kill(pid, signal.SIGTERM)
+                time.sleep(0.1)
+                i = i + 1
+                if i % 10 == 0:
+                    os.kill(pid, signal.SIGHUP)
+        except OSError, err:
+            err = str(err)
+            if err.find("No such process") > 0:
+                if os.path.exists(self.pidfile):
+                    os.remove(self.pidfile)
+            else:
+                print str(err)
+                sys.exit(1)
+
+        if self.verbose >= 1:
+            print "Stopped"
+
+    def restart(self):
+        self.stop()
+        self.start()
+
+    def get_pid(self):
+        try:
+            pf = file(self.pidfile, 'r')
+            pid = int(pf.read().strip())
+            pf.close()
+        except IOError:
+            pid = None
+        except SystemExit:
+            pid = None
+        return pid
+
+    def is_running(self):
+        pid = self.get_pid()
+
+        if pid is None:
+            print 'Process is stopped'
+        elif os.path.exists('/proc/%d' % pid):
+            print 'Process (pid %d) is running...' % pid
+        else:
+            print 'Process (pid %d) is killed' % pid
+
+        return pid and os.path.exists('/proc/%d' % pid)
+
+    def run(self):
+        raise NotImplementedError
+
+
+class MultiPartForm(object):
+    def __init__(self):
+        self.form_fields = []
+        self.files = []
+        self.boundary = mimetools.choose_boundary()
+        return
+
+    def get_content_type(self):
+        return 'multipart/form-data; boundary=%s' % self.boundary
+
+    def add_field(self, name, value):
+        self.form_fields.append((name, value))
+        return
+
+    def add_file(self, fieldname, filename, fileHandle, mimetype=None):
+        body = fileHandle.read()
+        if mimetype is None:
+            mimetype = mimetypes.guess_type(filename)[
+                0] or 'application/octet-stream'
+        self.files.append((fieldname, filename, mimetype, body))
+        return
+
+    def __str__(self):
+        parts = []
+        part_boundary = '--' + self.boundary
+
+        parts.extend([
+            part_boundary,
+            'Content-Disposition: form-data; name="%s"' % name,
+            '',
+            value,
+        ] for name, value in self.form_fields)
+
+        parts.extend(
+            [part_boundary,
+             'Content-Disposition: file; name="%s"; filename="%s"' % \
+             (field_name, filename),
+             'Content-Type: %s' % content_type,
+             '',
+             body,
+             ]
+            for field_name, filename, content_type, body in self.files
+        )
+
+        flattened = list(itertools.chain(*parts))
+        flattened.append('--' + self.boundary + '--')
+        flattened.append('')
+        return '\r\n'.join(flattened)
+
+
+class Command(object):
+    def __init__(self, cmd):
+        self.cmd = cmd
+        self.process = None
+        self.uuid = str(datetime.datetime.now()).replace(' ', '').replace(
+            ':', '').replace('-', '').replace('.', '')
+        self.result = open(tempfile.gettempdir() + os.path.sep + self.uuid,
+                           'a+')
+
+    def run(self, timeout=30):
+        def target():
+            logger.info(self.cmd)
+            self.process = subprocess.Popen(
+                self.cmd, shell=True, stdout=self.result, stderr=self.result)
+            self.process.communicate()
+
+        thread = threading.Thread(target=target)
+        thread.start()
+        thread.join(timeout)
+        if thread.is_alive():
+            logger.info(self.cmd)
+            self.process.terminate()
+            thread.join()
+            util = Common()
+            util.url_fetch(server_url + '/slowlog/log',
+                           {'cmd': self.cmd,
+                            'ip': util.get_one_ip()})
+            return self.cmd
+        result = open(tempfile.gettempdir() + os.path.sep + self.uuid,
+                      'r').read()
+        os.unlink(tempfile.gettempdir() + os.path.sep + self.uuid)
+        return result
+
+
+class Common(Daemon):
+    def __init__(self):
+        self.update_time = 0
+        self.etcd_list = etcd_list
+        self.etcd_prefix = etcd_prefix
+        self.feedback_url = feedback_url
+        self.host_info = {}
+        Daemon.__init__(self)
+
+    def urlencode(self, str):
+        reprStr = repr(str).replace(r'\x', '%')
+        return reprStr[1:-1]
+
+    def download(self, filename):
+        data = {'file': filename}
+        data = urllib.urlencode(data)
+        http_url = '%s/file/download?%s' % (server_url, data)
+        try:
+            conn = urllib2.urlopen(http_url)
+            raw = conn.read()
+            filename = os.path.basename(filename)
+            if raw != '':
+                f = open(filename, 'wb')
+                f.write(raw)
+                f.close()
+            else:
+                print 'file not exists,please upload it'
+        except Exception, e:
+            logger.error(e)
+            print e
+
+    def upload(self, filepath):
+        boundary = '----------%s' % hex(int(time.time() * 1000))
+        data = []
+        data.append('--%s' % boundary)
+        fr = open(filepath, 'rb')
+        filename = os.path.basename(filepath)
+        data.append('Content-Disposition: form-data; name="%s"\r\n' %
+                    'filename')
+        data.append(filename)
+        data.append('--%s' % boundary)
+        data.append('Content-Disposition: form-data; name="%s"; filename="%s"'
+                    % ('file', filename))
+        data.append('Content-Type: %s\r\n' % 'image/png')
+        data.append(fr.read())
+        fr.close()
+        data.append('--%s--\r\n' % boundary)
+
+        http_url = '%s/file/upload' % server_url
+        http_body = '\r\n'.join(data)
+        try:
+            req = urllib2.Request(http_url, data=http_body)
+            req.add_header('Content-Type',
+                           'multipart/form-data; boundary=%s' % boundary)
+            req.add_header('User-Agent', 'Mozilla/5.0')
+            req.add_header('Referer', 'http://www.taobao.com/')
+            resp = urllib2.urlopen(req, timeout=5)
+            qrcont = resp.read()
+            print qrcont
+        except Exception, e:
+            logger.error(e)
+            print e
+
+    def ip2int(self, server_ip):
+        return struct.unpack("!I", socket.inet_aton(server_ip))[0]
+
+    def int2ip(self, interger):
+        return socket.inet_ntoa(struct.pack("!I", interger))
+
+    def request_id(self, uid, server_ip):
+        ip2int = self.ip2int(server_ip)
+        now_time = time.time()
+        request_id = str(ip2int)[-8:] + str(now_time).replace(
+            '.', '')[-8:] + str(uid)[-4:]
+        return request_id.replace('.', '')
+
+    def url_fetch(self, url, data=None, timeout=30, httpCmd='POST'):
+        html = ''
+        try:
+            uid = os.getuid()
+            server_ip = self.get_one_ip()
+
+            form = MultiPartForm()
+            if data != None:
+                for k, v in enumerate(data):
+                    if v != 'f' is not None and not os.path.isfile(data[v]):
+                        form.add_field(v, data[v])
+                    else:  # file
+                        f = open(data[v], 'r')
+                        res = f.read()
+                        form.add_file(
+                            'f', filename=data[v], fileHandle=StringIO(res))
+                        f.close()
+
+            # Build the request
+            request = urllib2.Request(url=url)
+            request.add_header(
+                'User-agent',
+                'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'
+            )
+            body = str(form)
+            request.add_header('Content-type', form.get_content_type())
+            request.add_header('Content-length', len(body))
+            request.add_header('Login-user', os.getlogin())
+            request.add_header('Login-uid', uid)
+            request.add_header('Login-gid', os.getgid())
+            request.add_header('Server-ip', server_ip)
+            request.add_header('Exec-path', os.getcwd())
+            request.add_header('Hostname', self.get_hostname())
+            request.add_header('Request-id', self.request_id(uid, server_ip))
+            request.add_data(body)
+            request.get_method = lambda: httpCmd
+            html = urllib2.urlopen(request).read()
+
+            charset = re.compile(
+                r'<meta[^>]*charset=[\'\"]*?([a-z0-8\-]+)[\'\"]?[^>]*?>',
+                re.IGNORECASE).findall(html)
+            if len(charset) > 0:
+                if charset[0] == 'gb2312':
+                    charset[0] = 'gbk'
+                html = unicode(html, charset[0])
+        except Exception as e:
+            if hasattr(e, 'msg'):
+                print(e.msg)
+            else:
+                print e
+
+            logger.error(str(e))
+        return html
+
+    def parse_argv(self, argv):
+        data = {}
+        long_args = []
+        short_args = []
+        for v in argv:
+            if v.startswith('--'):
+                long_args.append(v.replace('--', '') + "=")
+            elif v.startswith('-'):
+                short_args.append(v.replace('-', ''))
+        opts = getopt.getopt(argv, ":".join(short_args) + ":", long_args)
+        for opt in opts[0]:
+            data[opt[0].replace('-', '')] = opt[1]
+        if len(data) > 0:
+            return data
+        else:
+            return argv
+
+    def execute(self, cmd):
+        try:
+            return os.popen(cmd).read()
+        except Exception as err:
+            logger.error(err)
+            return ""
+
+    def get_one_ip(self):
+        hostname = self.get_hostname()
+        ret = socket.gethostbyname(hostname)
+        return ret.strip()
+
+    def get_hostname(self):
+        os_name = os.name
+        host_name = None
+        if os_name == 'nt':
+            host_name = os.getenv('computername')
+        elif os_name == 'posix':
+            host = os.popen('hostname')
+            try:
+                host_name = host.read().strip()
+            finally:
+                host.close()
+        return host_name
+
+    def command_args(self, args):
+        if isinstance(args, list) or isinstance(args, tuple):
+            return '"%s"' % '" "'.join(args)
+        else:
+            return str(args)
+
+    def get_etcd(self):
+        time.sleep(random.randint(60, 90))
+        try:
+            now = time.time()
+            if now - self.update_time > 600:
+                html = self.url_fetch(host_info_url)
+                self.host_info = html.strip()
+                with open(host_info_file, 'w+') as fp:
+                    if md5.new(self.host_info).digest() != md5.new(fp.read(
+                    )).digest():
+                        fp.write(self.host_info)
+                if not isinstance(self.etcd_list, list):
+                    raise Exception("get etcd list error")
+                for host in self.etcd_list:
+                    self.url_fetch(
+                        "http://%s/v2/keys%s/heartbeat" %
+                        (host, self.etcd_prefix),
+                        data={'ttl': 60,
+                              'value': 'heartbeat'},
+                        httpCmd='PUT')
+                    self.url_fetch(
+                        "http://%s/v2/keys%s/servers" %
+                        (host, self.etcd_prefix),
+                        data={'ttl': 60,
+                              'value': 'servers'},
+                        httpCmd='PUT')
+                self.update_time = now
+        except Exception as er:
+            logger.error('get_etcd error:' + str(er))
+            time.sleep(random.randint(1, 5))
+            return self.get_etcd()
+
+    def heartbeat(self):
+        time.sleep(random.randint(2, 6))
+        try:
+            ip = self.get_one_ip()
+            for host in self.etcd_list:
+                html = self.url_fetch(
+                    "http://%s/v2/keys%s/heartbeat/%s" %
+                    (host, self.etcd_prefix, ip),
+                    data={'ttl': 60,
+                          'value': '2333'},
+                    httpCmd='PUT')
+                if html != "":
+                    break
+        except Exception as er:
+            logger.error('heartbeat error:' + str(er))
+
+    def watch_commmand(self):
+        try:
+            ip = self.get_one_ip()
+            for host in self.etcd_list:
+                self.url_fetch(
+                    "http://%s/v2/keys%s/servers/%s?wait=true&recursive=true" %
+                    (host, self.etcd_prefix, ip),
+                    timeout=20 + random.randint(1, 10))
+                content = self.url_fetch(
+                    "http://%s/v2/keys%s/servers/%s?recursive=true" %
+                    (host, self.etcd_prefix, ip),
+                    timeout=10)
+                if content != "":
+                    self.feedback_result(ip, host, content)
+                    break
+        except Exception as er:
+            logger.error('watch_commmand error:' + str(er))
+
+    def feedback_result(self, ip, host, content):
+        try:
+            if content == "Not Found":
+                return
+            rjson = json.loads(content)
+            if not rjson['node'].get('dir', False):
+                url = "http://%s/v2/keys%s?recursive=true" % (
+                    host, rjson['node']['key'])
+                self.url_fetch(url, httpCmd='DELETE')
+                return
+
+            if not rjson['node'].get('nodes'):
+                return
+
+            for cNode in rjson['node']['nodes']:
+                cmd = cNode['value'].decode("utf-8")
+                key = cNode['key']
+                self.keys.append(key)
+                url = "http://%s/v2/keys%s?recursive=true" % (host, key)
+                self.url_fetch(url, httpCmd='DELETE')
+
+                def feedback():
+                    result = Command(cmd).run()
+                    message = {'ip': ip, 'cmd': cmd, 'result': result}
+                    time.sleep(random.uniform(0, 1))
+                    self.url_fetch(feedback_url,
+                                   {'param': json.dumps({
+                                       'param': message
+                                   })})
+
+                threading.Thread(target=feedback).start()
+        except BaseException as e:
+            logger.error('feedback_result error:' + str(e))
+
+    def run(self):
+        self.update_time = time.time() - 800
+        while True:
+            try:
+                self.get_etcd()
+                self.heartbeat()
+                self.watch_commmand()
+                time.sleep(random.uniform(1, 2))
+            except BaseException as e:
+                time.sleep(random.randint(1, 6))
+
+
+class Cli():
+    def __init__(self):
+        self.entry = server_url + "/%s"
+        self.util = Common()
+
+    def download(self, args):
+        self.util.download(args[0])
+
+    def upload(self, args):
+        self.util.upload(args[0])
+
+    def listfile(self, args):
+        ret = self.util.url_fetch(self.entry % 'file/listfile')
+        print(ret)
+
+    def rpmupload(self, args):
+        argv = self.util.parse_argv(args[0:])
+        if isinstance(argv, list):
+            argv = {}
+        cobbler_ips = self.util.url_fetch(self.entry % '/cobbler/list_cobbler')
+        form = MultiPartForm()
+        if argv != None:
+            for k, v in enumerate(argv):
+                if v != 'f' is not None and not os.path.isfile(argv[v]):
+                    form.add_field(v, argv[v])
+                else:  # file
+                    f = open(argv[v], 'r')
+                    res = f.read()
+                    filepath, filename = os.path.split(argv[v])
+                    form.add_file(
+                        os.path.basename(argv[v]),
+                        filename=filename,
+                        fileHandle=StringIO(res))
+                    f.close()
+        # sync file to every idc
+        for cobbler_ip in cobbler_ips:
+            request = urllib2.Request(url='http://' + cobbler_ip + ':8080')
+            body = str(form)
+            request.add_data(body)
+            html = urllib2.urlopen(request).read()
+            print html
+
+    def help(self, args):
+        ret = self.util.url_fetch(self.entry % 'help/list')
+        print(ret)
+
+    def default(self, cmd, args):
+        argv = self.util.parse_argv(args[1:])
+        if isinstance(argv, list):
+            argv = {}
+        ret = self.util.url_fetch(self.entry % cmd, argv)
+        print(ret)
+
+    def shell(self, args):
+        if len(args) < 1:
+            print('ERROR: param is not enough')
+            sys.exit(0)
+        path = script_path
+        if not os.path.exists(path):
+            os.makedis(path, 0777)
+
+        fn = path + os.path.sep + args[0]
+        src = ''
+        is_python = False
+        if not os.path.exists(fn) or os.stat(fn).st_mtime < (
+                time.time() - 10 * 60):
+            self.download(args)
+            self.util.execute("mv ./%s %s" % (args[0], fn))
+
+        src = open(fn, 'r').read()
+
+        lines = re.split(r'\n', src)
+        for line in lines:
+            if line.strip() != '':
+                break
+        if line.find('python') > 0:
+            is_python = True
+        if is_python:
+            cmd = Command('/usr/bin/python %s %s' %
+                          (fn, self.util.command_args(args[1:])))
+            result = cmd.run(60 * 60 * 24)
+        else:
+            cmd = Command('/bin/bash %s %s' %
+                          (fn, self.util.command_args(args[1:])))
+            result = cmd.run(60 * 60 * 24)
+        print(result)
+
+
+if __name__ == '__main__':
+
+    cli = Cli()
+    util = Common()
+    if len(sys.argv) < 2:
+        cli.help(sys.argv)
+    else:
+        ctl = sys.argv[1]
+        if 'daemon' == ctl:
+            data = util.parse_argv(sys.argv[2:])
+            opt = None
+            if len(data) != 0:
+                opt = data.get('s')
+            if 'start' == opt:
+                print "ops daemon start"
+                util.start()
+            elif 'stop' == opt:
+                print "ops daemon stop"
+                util.stop()
+            elif 'restart' == opt:
+                print "ops daemon restart"
+                util.restart()
+            elif 'debug' == opt:
+                print "ops daemon debug"
+                util.run()
+            else:
+                print "usage: ops daemon -s start|stop|restart"
+                sys.exit(2)
+        else:
+            if len(sys.argv) > 2:
+                cmd = sys.argv[2]
+            else:
+                cmd = 'help'
+            if hasattr(cli, ctl):
+                getattr(cli, ctl)(sys.argv[2:])
+            else:
+                cli.default(ctl + '/' + cmd, sys.argv[2:])

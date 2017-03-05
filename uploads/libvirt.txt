@@ -1,0 +1,3550 @@
+Help on module libvirt:
+
+NAME
+    libvirt
+
+FILE
+    /usr/lib64/python2.6/site-packages/libvirt.py
+
+DESCRIPTION
+    # WARNING WARNING WARNING WARNING
+    #
+    # This file is automatically written by generator.py. Any changes
+    # made here will be lost.
+    #
+    # To change the manually written methods edit libvirt-override.py
+    # To change the automatically written methods edit generator.py
+    #
+    # WARNING WARNING WARNING WARNING
+    #
+    #
+    # Manually written part of python bindings for libvirt
+    #
+
+CLASSES
+    exceptions.Exception(exceptions.BaseException)
+        libvirtError
+    virConnect
+    virDomain
+    virDomainSnapshot
+    virInterface
+    virNWFilter
+    virNetwork
+    virNodeDevice
+    virSecret
+    virStoragePool
+    virStorageVol
+    virStream
+    
+    class libvirtError(exceptions.Exception)
+     |  # The root of all libvirt errors.
+     |  
+     |  Method resolution order:
+     |      libvirtError
+     |      exceptions.Exception
+     |      exceptions.BaseException
+     |      __builtin__.object
+     |  
+     |  Methods defined here:
+     |  
+     |  __init__(self, defmsg, conn=None, dom=None, net=None, pool=None, vol=None)
+     |  
+     |  get_error_code(self)
+     |  
+     |  get_error_domain(self)
+     |  
+     |  get_error_level(self)
+     |  
+     |  get_error_message(self)
+     |  
+     |  get_int1(self)
+     |  
+     |  get_int2(self)
+     |  
+     |  get_str1(self)
+     |  
+     |  get_str2(self)
+     |  
+     |  get_str3(self)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors defined here:
+     |  
+     |  __weakref__
+     |      list of weak references to the object (if defined)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes inherited from exceptions.Exception:
+     |  
+     |  __new__ = <built-in method __new__ of type object>
+     |      T.__new__(S, ...) -> a new object with type S, a subtype of T
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from exceptions.BaseException:
+     |  
+     |  __delattr__(...)
+     |      x.__delattr__('name') <==> del x.name
+     |  
+     |  __getattribute__(...)
+     |      x.__getattribute__('name') <==> x.name
+     |  
+     |  __getitem__(...)
+     |      x.__getitem__(y) <==> x[y]
+     |  
+     |  __getslice__(...)
+     |      x.__getslice__(i, j) <==> x[i:j]
+     |      
+     |      Use of negative indices is not supported.
+     |  
+     |  __reduce__(...)
+     |  
+     |  __repr__(...)
+     |      x.__repr__() <==> repr(x)
+     |  
+     |  __setattr__(...)
+     |      x.__setattr__('name', value) <==> x.name = value
+     |  
+     |  __setstate__(...)
+     |  
+     |  __str__(...)
+     |      x.__str__() <==> str(x)
+     |  
+     |  __unicode__(...)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors inherited from exceptions.BaseException:
+     |  
+     |  __dict__
+     |  
+     |  args
+     |  
+     |  message
+    
+    class virConnect
+     |  Methods defined here:
+     |  
+     |  __del__(self)
+     |      # virConnect methods from virConnect.py (hand coded)
+     |  
+     |  __init__(self, _obj=None)
+     |  
+     |  baselineCPU(self, xmlCPUs, flags)
+     |      Computes the most feature-rich CPU which is compatible with all given host CPUs.
+     |  
+     |  changeBegin(self, flags)
+     |      This function creates a restore point to which one can return
+     |      later by calling virInterfaceChangeRollback(). This function should
+     |      be called before any transaction with interface configuration.
+     |      Once it is known that a new configuration works, it can be committed via
+     |      virInterfaceChangeCommit(), which frees the restore point.
+     |      
+     |      If virInterfaceChangeBegin() is called when a transaction is
+     |      already opened, this function will fail, and a
+     |      VIR_ERR_INVALID_OPERATION will be logged.
+     |  
+     |  changeCommit(self, flags)
+     |      This commits the changes made to interfaces and frees the restore point
+     |      created by virInterfaceChangeBegin().
+     |      
+     |      If virInterfaceChangeCommit() is called when a transaction is not
+     |      opened, this function will fail, and a VIR_ERR_INVALID_OPERATION
+     |      will be logged.
+     |  
+     |  changeRollback(self, flags)
+     |      This cancels changes made to interfaces settings by restoring previous
+     |      state created by virInterfaceChangeBegin().
+     |      
+     |      If virInterfaceChangeRollback() is called when a transaction is not
+     |      opened, this function will fail, and a VIR_ERR_INVALID_OPERATION
+     |      will be logged.
+     |  
+     |  close(self)
+     |      This function closes the connection to the Hypervisor. This should
+     |      not be called if further interaction with the Hypervisor are needed
+     |      especially if there is running domain which need further monitoring by
+     |      the application.
+     |      
+     |      Connections are reference counted; the count is explicitly
+     |      increased by the initial open (virConnectOpen, virConnectOpenAuth,
+     |      and the like) as well as virConnectRef; it is also temporarily
+     |      increased by other API that depend on the connection remaining
+     |      alive.  The open and every virConnectRef call should have a
+     |      matching virConnectClose, and all other references will be released
+     |      after the corresponding operation completes.
+     |  
+     |  compareCPU(self, xmlDesc, flags)
+     |      Compares the given CPU description with the host CPU
+     |  
+     |  createLinux(self, xmlDesc, flags)
+     |      Deprecated after 0.4.6.
+     |      Renamed to virDomainCreateXML() providing identical functionality.
+     |      This existing name will left indefinitely for API compatibility.
+     |  
+     |  createXML(self, xmlDesc, flags)
+     |      Launch a new guest domain, based on an XML description similar
+     |      to the one returned by virDomainGetXMLDesc()
+     |      This function may require privileged access to the hypervisor.
+     |      The domain is not persistent, so its definition will disappear when it
+     |      is destroyed, or if the host is restarted (see virDomainDefineXML() to
+     |      define persistent domains).
+     |      
+     |      If the VIR_DOMAIN_START_PAUSED flag is set, the guest domain
+     |      will be started, but its CPUs will remain paused. The CPUs
+     |      can later be manually started using virDomainResume.
+     |      
+     |      If the VIR_DOMAIN_START_AUTODESTROY flag is set, the guest
+     |      domain will be automatically destroyed when the virConnectPtr
+     |      object is finally released. This will also happen if the
+     |      client application crashes / loses its connection to the
+     |      libvirtd daemon. Any domains marked for auto destroy will
+     |      block attempts at migration, save-to-file, or snapshots.
+     |  
+     |  defineXML(self, xml)
+     |      Define a domain, but does not start it.
+     |      This definition is persistent, until explicitly undefined with
+     |      virDomainUndefine(). A previous definition for this domain would be
+     |      overriden if it already exists.
+     |      
+     |      Some hypervisors may prevent this operation if there is a current
+     |      block copy operation on a transient domain with the same id as the
+     |      domain being defined; in that case, use virDomainBlockJobAbort() to
+     |      stop the block copy first.
+     |  
+     |  dispatchDomainEventBlockPullCallback(self, dom, path, type, status, cbData)
+     |      Dispatches events to python user domain blockJob event callbacks
+     |  
+     |  domainEventDeregister(self, cb)
+     |      Removes a Domain Event Callback. De-registering for a
+     |      domain callback will disable delivery of this event type
+     |  
+     |  domainEventDeregisterAny(self, callbackID)
+     |      Removes a Domain Event Callback. De-registering for a
+     |      domain callback will disable delivery of this event type
+     |  
+     |  domainEventRegister(self, cb, opaque)
+     |      Adds a Domain Event Callback. Registering for a domain
+     |      callback will enable delivery of the events
+     |  
+     |  domainEventRegisterAny(self, dom, eventID, cb, opaque)
+     |      Adds a Domain Event Callback. Registering for a domain
+     |      callback will enable delivery of the events
+     |  
+     |  domainXMLFromNative(self, nativeFormat, nativeConfig, flags)
+     |      Reads native configuration data  describing a domain, and
+     |      generates libvirt domain XML. The format of the native
+     |      data is hypervisor dependant.
+     |  
+     |  domainXMLToNative(self, nativeFormat, domainXml, flags)
+     |      Reads a domain XML configuration document, and generates
+     |      a native configuration file describing the domain.
+     |      The format of the native data is hypervisor dependant.
+     |  
+     |  findStoragePoolSources(self, type, srcSpec, flags)
+     |      Talks to a storage backend and attempts to auto-discover the set of
+     |      available storage pool sources. e.g. For iSCSI this would be a set of
+     |      iSCSI targets. For NFS this would be a list of exported paths.  The
+     |      srcSpec (optional for some storage pool types, e.g. local ones) is
+     |      an instance of the storage pool's source element specifying where
+     |      to look for the pools.
+     |      
+     |      srcSpec is not required for some types (e.g., those querying
+     |      local storage resources only)
+     |  
+     |  getCPUStats(self, cpuNum, flags)
+     |      Extract node's CPU statistics.
+     |  
+     |  getCapabilities(self)
+     |      Provides capabilities of the hypervisor / driver.
+     |  
+     |  getCellsFreeMemory(self, startCell, maxCells)
+     |      Returns the available memory for a list of cells
+     |  
+     |  getFreeMemory(self)
+     |      provides the free memory available on the Node
+     |      Note: most libvirt APIs provide memory sizes in kibibytes, but in this
+     |      function the returned value is in bytes. Divide by 1024 as necessary.
+     |  
+     |  getHostname(self)
+     |      This returns the system hostname on which the hypervisor is
+     |      running (the result of the gethostname system call).  If
+     |      we are connected to a remote system, then this returns the
+     |      hostname of the remote system.
+     |  
+     |  getInfo(self)
+     |      Extract hardware information about the Node.
+     |  
+     |  getLibVersion(self)
+     |      Returns the libvirt version of the connection host
+     |  
+     |  getMaxVcpus(self, type)
+     |      Provides the maximum number of virtual CPUs supported for a guest VM of a
+     |      specific type. The 'type' parameter here corresponds to the 'type'
+     |      attribute in the <domain> element of the XML.
+     |  
+     |  getMemoryParameters(self, flags)
+     |      Get the node memory parameters
+     |  
+     |  getMemoryStats(self, cellNum, flags)
+     |      Extract node's memory statistics.
+     |  
+     |  getSysinfo(self, flags)
+     |      This returns the XML description of the sysinfo details for the
+     |      host on which the hypervisor is running, in the same format as the
+     |      <sysinfo> element of a domain XML.  This information is generally
+     |      available only for hypervisors running with root privileges.
+     |  
+     |  getType(self)
+     |      Get the name of the Hypervisor software used.
+     |  
+     |  getURI(self)
+     |      This returns the URI (name) of the hypervisor connection.
+     |      Normally this is the same as or similar to the string passed
+     |      to the virConnectOpen/virConnectOpenReadOnly call, but
+     |      the driver may make the URI canonical.  If name == None
+     |      was passed to virConnectOpen, then the driver will return
+     |      a non-None URI which can be used to connect to the same
+     |      hypervisor later.
+     |  
+     |  getVersion(self)
+     |      Returns the running hypervisor version of the connection host
+     |  
+     |  interfaceDefineXML(self, xml, flags)
+     |      Define an interface (or modify existing interface configuration).
+     |      
+     |      Normally this change in the interface configuration is immediately
+     |      permanent/persistent, but if virInterfaceChangeBegin() has been
+     |      previously called (i.e. if an interface config transaction is
+     |      open), the new interface definition will only become permanent if
+     |      virInterfaceChangeCommit() is called prior to the next reboot of
+     |      the system running libvirtd. Prior to that time, it can be
+     |      explicitly removed using virInterfaceChangeRollback(), or will be
+     |      automatically removed during the next reboot of the system running
+     |      libvirtd.
+     |  
+     |  interfaceLookupByMACString(self, macstr)
+     |      Try to lookup an interface on the given hypervisor based on its MAC.
+     |  
+     |  interfaceLookupByName(self, name)
+     |      Try to lookup an interface on the given hypervisor based on its name.
+     |  
+     |  isAlive(self)
+     |      Determine if the connection to the hypervisor is still alive
+     |      
+     |      A connection will be classed as alive if it is either local, or running
+     |      over a channel (TCP or UNIX socket) which is not closed.
+     |  
+     |  isEncrypted(self)
+     |      Determine if the connection to the hypervisor is encrypted
+     |  
+     |  isSecure(self)
+     |      Determine if the connection to the hypervisor is secure
+     |      
+     |      A connection will be classed as secure if it is either
+     |      encrypted, or running over a channel which is not exposed
+     |      to eavesdropping (eg a UNIX domain socket, or pipe)
+     |  
+     |  listAllDevices(self, flags)
+     |      Returns a list of host node device objects
+     |  
+     |  listAllDomains(self, flags)
+     |      List all domains and returns a list of domain objects
+     |  
+     |  listAllInterfaces(self, flags)
+     |      Returns a list of interface objects
+     |  
+     |  listAllNWFilters(self, flags)
+     |      Returns a list of network filter objects
+     |  
+     |  listAllNetworks(self, flags)
+     |      Returns a list of network objects
+     |  
+     |  listAllSecrets(self, flags)
+     |      Returns a list of secret objects
+     |  
+     |  listAllStoragePools(self, flags)
+     |      Returns a list of storage pool objects
+     |  
+     |  listDefinedDomains(self)
+     |      list the defined domains, stores the pointers to the names in @names
+     |  
+     |  listDefinedInterfaces(self)
+     |      list the defined interfaces, stores the pointers to the names in @names
+     |  
+     |  listDefinedNetworks(self)
+     |      list the defined networks, stores the pointers to the names in @names
+     |  
+     |  listDefinedStoragePools(self)
+     |      list the defined storage pool, stores the pointers to the names in @names
+     |  
+     |  listDevices(self, cap, flags)
+     |      list the node devices
+     |  
+     |  listDomainsID(self)
+     |      Returns the list of the ID of the domains on the hypervisor
+     |  
+     |  listInterfaces(self)
+     |      list the running interfaces, stores the pointers to the names in @names
+     |  
+     |  listNWFilters(self)
+     |      List the defined network filters
+     |  
+     |  listNetworks(self)
+     |      list the networks, stores the pointers to the names in @names
+     |  
+     |  listSecrets(self)
+     |      List the defined secret IDs
+     |  
+     |  listStoragePools(self)
+     |      list the storage pools, stores the pointers to the names in @names
+     |  
+     |  lookupByID(self, id)
+     |      Try to find a domain based on the hypervisor ID number
+     |      Note that this won't work for inactive domains which have an ID of -1,
+     |      in that case a lookup based on the Name or UUId need to be done instead.
+     |  
+     |  lookupByName(self, name)
+     |      Try to lookup a domain on the given hypervisor based on its name.
+     |  
+     |  lookupByUUID(self, uuid)
+     |      Try to lookup a domain on the given hypervisor based on its UUID.
+     |  
+     |  lookupByUUIDString(self, uuidstr)
+     |      Try to lookup a domain on the given hypervisor based on its UUID.
+     |  
+     |  migrate(self, domain, flags, dname, uri, bandwidth)
+     |      Migrate the domain object from its current host to the destination
+     |      host given by dconn (a connection to the destination host).
+     |      
+     |      Flags may be one of more of the following:
+     |        VIR_MIGRATE_LIVE      Do not pause the VM during migration
+     |        VIR_MIGRATE_PEER2PEER Direct connection between source & destination hosts
+     |        VIR_MIGRATE_TUNNELLED Tunnel migration data over the libvirt RPC channel
+     |        VIR_MIGRATE_PERSIST_DEST If the migration is successful, persist the domain
+     |                                 on the destination host.
+     |        VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
+     |                                    domain on the source host.
+     |        VIR_MIGRATE_PAUSED    Leave the domain suspended on the remote side.
+     |        VIR_MIGRATE_CHANGE_PROTECTION Protect against domain configuration
+     |                                      changes during the migration process (set
+     |                                      automatically when supported).
+     |        VIR_MIGRATE_UNSAFE    Force migration even if it is considered unsafe.
+     |      
+     |      VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
+     |      Applications using the VIR_MIGRATE_PEER2PEER flag will probably
+     |      prefer to invoke virDomainMigrateToURI, avoiding the need to
+     |      open connection to the destination host themselves.
+     |      
+     |      If a hypervisor supports renaming domains during migration,
+     |      then you may set the dname parameter to the new name (otherwise
+     |      it keeps the same name).  If this is not supported by the
+     |      hypervisor, dname must be None or else you will get an error.
+     |      
+     |      If the VIR_MIGRATE_PEER2PEER flag is set, the uri parameter
+     |      must be a valid libvirt connection URI, by which the source
+     |      libvirt driver can connect to the destination libvirt. If
+     |      omitted, the dconn connection object will be queried for its
+     |      current URI.
+     |      
+     |      If the VIR_MIGRATE_PEER2PEER flag is NOT set, the URI parameter
+     |      takes a hypervisor specific format. The hypervisor capabilities
+     |      XML includes details of the support URI schemes. If omitted
+     |      the dconn will be asked for a default URI.
+     |      
+     |      In either case it is typically only necessary to specify a
+     |      URI if the destination host has multiple interfaces and a
+     |      specific interface is required to transmit migration data.
+     |      
+     |      The maximum bandwidth (in MiB/s) that will be used to do migration
+     |      can be specified with the bandwidth parameter.  If set to 0,
+     |      libvirt will choose a suitable default.  Some hypervisors do
+     |      not support this feature and will return an error if bandwidth
+     |      is not 0.
+     |      
+     |      To see which features are supported by the current hypervisor,
+     |      see virConnectGetCapabilities, /capabilities/host/migration_features.
+     |      
+     |      There are many limitations on migration imposed by the underlying
+     |      technology - for example it may not be possible to migrate between
+     |      different processors even with the same architecture, or between
+     |      different types of hypervisor.
+     |  
+     |  migrate2(self, domain, dxml, flags, dname, uri, bandwidth)
+     |      Migrate the domain object from its current host to the destination
+     |      host given by dconn (a connection to the destination host).
+     |      
+     |      Flags may be one of more of the following:
+     |        VIR_MIGRATE_LIVE      Do not pause the VM during migration
+     |        VIR_MIGRATE_PEER2PEER Direct connection between source & destination hosts
+     |        VIR_MIGRATE_TUNNELLED Tunnel migration data over the libvirt RPC channel
+     |        VIR_MIGRATE_PERSIST_DEST If the migration is successful, persist the domain
+     |                                 on the destination host.
+     |        VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
+     |                                    domain on the source host.
+     |        VIR_MIGRATE_PAUSED    Leave the domain suspended on the remote side.
+     |        VIR_MIGRATE_CHANGE_PROTECTION Protect against domain configuration
+     |                                      changes during the migration process (set
+     |                                      automatically when supported).
+     |        VIR_MIGRATE_UNSAFE    Force migration even if it is considered unsafe.
+     |      
+     |      VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
+     |      Applications using the VIR_MIGRATE_PEER2PEER flag will probably
+     |      prefer to invoke virDomainMigrateToURI, avoiding the need to
+     |      open connection to the destination host themselves.
+     |      
+     |      If a hypervisor supports renaming domains during migration,
+     |      then you may set the dname parameter to the new name (otherwise
+     |      it keeps the same name).  If this is not supported by the
+     |      hypervisor, dname must be None or else you will get an error.
+     |      
+     |      If the VIR_MIGRATE_PEER2PEER flag is set, the uri parameter
+     |      must be a valid libvirt connection URI, by which the source
+     |      libvirt driver can connect to the destination libvirt. If
+     |      omitted, the dconn connection object will be queried for its
+     |      current URI.
+     |      
+     |      If the VIR_MIGRATE_PEER2PEER flag is NOT set, the URI parameter
+     |      takes a hypervisor specific format. The hypervisor capabilities
+     |      XML includes details of the support URI schemes. If omitted
+     |      the dconn will be asked for a default URI.
+     |      
+     |      In either case it is typically only necessary to specify a
+     |      URI if the destination host has multiple interfaces and a
+     |      specific interface is required to transmit migration data.
+     |      
+     |      The maximum bandwidth (in MiB/s) that will be used to do migration
+     |      can be specified with the bandwidth parameter.  If set to 0,
+     |      libvirt will choose a suitable default.  Some hypervisors do
+     |      not support this feature and will return an error if bandwidth
+     |      is not 0.
+     |      
+     |      To see which features are supported by the current hypervisor,
+     |      see virConnectGetCapabilities, /capabilities/host/migration_features.
+     |      
+     |      There are many limitations on migration imposed by the underlying
+     |      technology - for example it may not be possible to migrate between
+     |      different processors even with the same architecture, or between
+     |      different types of hypervisor.
+     |      
+     |      If the hypervisor supports it, @dxml can be used to alter
+     |      host-specific portions of the domain XML that will be used on
+     |      the destination.  For example, it is possible to alter the
+     |      backing filename that is associated with a disk device, in order
+     |      to account for naming differences between source and destination
+     |      in accessing the underlying storage.  The migration will fail
+     |      if @dxml would cause any guest-visible changes.  Pass None
+     |      if no changes are needed to the XML between source and destination.
+     |      @dxml cannot be used to rename the domain during migration (use
+     |      @dname for that purpose).  Domain name in @dxml must match the
+     |      original domain name.
+     |  
+     |  networkCreateXML(self, xmlDesc)
+     |      Create and start a new virtual network, based on an XML description
+     |      similar to the one returned by virNetworkGetXMLDesc()
+     |  
+     |  networkDefineXML(self, xml)
+     |      Define a network, but does not create it
+     |  
+     |  networkLookupByName(self, name)
+     |      Try to lookup a network on the given hypervisor based on its name.
+     |  
+     |  networkLookupByUUID(self, uuid)
+     |      Try to lookup a network on the given hypervisor based on its UUID.
+     |  
+     |  networkLookupByUUIDString(self, uuidstr)
+     |      Try to lookup a network on the given hypervisor based on its UUID.
+     |  
+     |  newStream(self, flags)
+     |      Creates a new stream object which can be used to perform
+     |      streamed I/O with other public API function.
+     |      
+     |      When no longer needed, a stream object must be released
+     |      with virStreamFree. If a data stream has been used,
+     |      then the application must call virStreamFinish or
+     |      virStreamAbort before free'ing to, in order to notify
+     |      the driver of termination.
+     |      
+     |      If a non-blocking data stream is required passed
+     |      VIR_STREAM_NONBLOCK for flags, otherwise pass 0.
+     |  
+     |  nodeDeviceCreateXML(self, xmlDesc, flags)
+     |      Create a new device on the VM host machine, for example, virtual
+     |      HBAs created using vport_create.
+     |  
+     |  nodeDeviceLookupByName(self, name)
+     |      Lookup a node device by its name.
+     |  
+     |  numOfDefinedDomains(self)
+     |      Provides the number of defined but inactive domains.
+     |  
+     |  numOfDefinedInterfaces(self)
+     |      Provides the number of defined (inactive) interfaces on the physical host.
+     |  
+     |  numOfDefinedNetworks(self)
+     |      Provides the number of inactive networks.
+     |  
+     |  numOfDefinedStoragePools(self)
+     |      Provides the number of inactive storage pools
+     |  
+     |  numOfDevices(self, cap, flags)
+     |      Provides the number of node devices.
+     |      
+     |      If the optional 'cap'  argument is non-None, then the count
+     |      will be restricted to devices with the specified capability
+     |  
+     |  numOfDomains(self)
+     |      Provides the number of active domains.
+     |  
+     |  numOfInterfaces(self)
+     |      Provides the number of active interfaces on the physical host.
+     |  
+     |  numOfNWFilters(self)
+     |      Provides the number of nwfilters.
+     |  
+     |  numOfNetworks(self)
+     |      Provides the number of active networks.
+     |  
+     |  numOfSecrets(self)
+     |      Fetch number of currently defined secrets.
+     |  
+     |  numOfStoragePools(self)
+     |      Provides the number of active storage pools
+     |  
+     |  nwfilterDefineXML(self, xmlDesc)
+     |      Define a new network filter, based on an XML description
+     |      similar to the one returned by virNWFilterGetXMLDesc()
+     |  
+     |  nwfilterLookupByName(self, name)
+     |      Try to lookup a network filter on the given hypervisor based on its name.
+     |  
+     |  nwfilterLookupByUUID(self, uuid)
+     |      Try to lookup a network filter on the given hypervisor based on its UUID.
+     |  
+     |  nwfilterLookupByUUIDString(self, uuidstr)
+     |      Try to lookup an nwfilter on the given hypervisor based on its UUID.
+     |  
+     |  registerCloseCallback(self, cb, opaque)
+     |      Adds a close event callback, providing a notification
+     |      when a connection fails / closes
+     |  
+     |  restore(self, frm)
+     |      This method will restore a domain saved to disk by virDomainSave().
+     |      
+     |      See virDomainRestoreFlags() for more control.
+     |  
+     |  restoreFlags(self, frm, dxml, flags)
+     |      This method will restore a domain saved to disk by virDomainSave().
+     |      
+     |      If the hypervisor supports it, @dxml can be used to alter
+     |      host-specific portions of the domain XML that will be used when
+     |      restoring an image.  For example, it is possible to alter the
+     |      backing filename that is associated with a disk device, in order to
+     |      prepare for file renaming done as part of backing up the disk
+     |      device while the domain is stopped.
+     |      
+     |      If @flags includes VIR_DOMAIN_SAVE_BYPASS_CACHE, then libvirt will
+     |      attempt to bypass the file system cache while restoring the file, or
+     |      fail if it cannot do so for the given system; this can allow less
+     |      pressure on file system cache, but also risks slowing saves to NFS.
+     |      
+     |      Normally, the saved state file will remember whether the domain was
+     |      running or paused, and restore defaults to the same state.
+     |      Specifying VIR_DOMAIN_SAVE_RUNNING or VIR_DOMAIN_SAVE_PAUSED in
+     |      @flags will override the default read from the file.  These two
+     |      flags are mutually exclusive.
+     |  
+     |  saveImageDefineXML(self, file, dxml, flags)
+     |      This updates the definition of a domain stored in a saved state
+     |      file.  @file must be a file created previously by virDomainSave()
+     |      or virDomainSaveFlags().
+     |      
+     |      @dxml can be used to alter host-specific portions of the domain XML
+     |      that will be used when restoring an image.  For example, it is
+     |      possible to alter the backing filename that is associated with a
+     |      disk device, to match renaming done as part of backing up the disk
+     |      device while the domain is stopped.
+     |      
+     |      Normally, the saved state file will remember whether the domain was
+     |      running or paused, and restore defaults to the same state.
+     |      Specifying VIR_DOMAIN_SAVE_RUNNING or VIR_DOMAIN_SAVE_PAUSED in
+     |      @flags will override the default saved into the file; omitting both
+     |      leaves the file's default unchanged.  These two flags are mutually
+     |      exclusive.
+     |  
+     |  saveImageGetXMLDesc(self, file, flags)
+     |      This method will extract the XML describing the domain at the time
+     |      a saved state file was created.  @file must be a file created
+     |      previously by virDomainSave() or virDomainSaveFlags().
+     |      
+     |      No security-sensitive data will be included unless @flags contains
+     |      VIR_DOMAIN_XML_SECURE; this flag is rejected on read-only
+     |      connections.  For this API, @flags should not contain either
+     |      VIR_DOMAIN_XML_INACTIVE or VIR_DOMAIN_XML_UPDATE_CPU.
+     |  
+     |  secretDefineXML(self, xml, flags)
+     |      If XML specifies a UUID, locates the specified secret and replaces all
+     |      attributes of the secret specified by UUID by attributes specified in xml
+     |      (any attributes not specified in xml are discarded).
+     |      
+     |      Otherwise, creates a new secret with an automatically chosen UUID, and
+     |      initializes its attributes from xml.
+     |  
+     |  secretLookupByUUID(self, uuid)
+     |      Try to lookup a secret on the given hypervisor based on its UUID.
+     |  
+     |  secretLookupByUUIDString(self, uuidstr)
+     |      Try to lookup a secret on the given hypervisor based on its UUID.
+     |      Uses the printable string value to describe the UUID
+     |  
+     |  secretLookupByUsage(self, usageType, usageID)
+     |      Try to lookup a secret on the given hypervisor based on its usage
+     |      The usageID is unique within the set of secrets sharing the
+     |      same usageType value.
+     |  
+     |  setKeepAlive(self, interval, count)
+     |      Start sending keepalive messages after interval second of inactivity and
+     |      consider the connection to be broken when no response is received after
+     |      count keepalive messages sent in a row.  In other words, sending count + 1
+     |      keepalive message results in closing the connection.  When interval is <= 0,
+     |      no keepalive messages will be sent.  When count is 0, the connection will be
+     |      automatically closed after interval seconds of inactivity without sending
+     |      any keepalive messages.
+     |      
+     |      Note: client has to implement and run event loop to be able to use keepalive
+     |      messages.  Failure to do so may result in connections being closed
+     |      unexpectedly.
+     |      
+     |      Note: This API function controls only keepalive messages sent by the client.
+     |      If the server is configured to use keepalive you still need to run the event
+     |      loop to respond to them, even if you disable keepalives by this function.
+     |  
+     |  setMemoryParameters(self, params, flags)
+     |      Change the node memory tunables
+     |  
+     |  storagePoolCreateXML(self, xmlDesc, flags)
+     |      Create a new storage based on its XML description. The
+     |      pool is not persistent, so its definition will disappear
+     |      when it is destroyed, or if the host is restarted
+     |  
+     |  storagePoolDefineXML(self, xml, flags)
+     |      Define a new inactive storage pool based on its XML description. The
+     |      pool is persistent, until explicitly undefined.
+     |  
+     |  storagePoolLookupByName(self, name)
+     |      Fetch a storage pool based on its unique name
+     |  
+     |  storagePoolLookupByUUID(self, uuid)
+     |      Fetch a storage pool based on its globally unique id
+     |  
+     |  storagePoolLookupByUUIDString(self, uuidstr)
+     |      Fetch a storage pool based on its globally unique id
+     |  
+     |  storageVolLookupByKey(self, key)
+     |      Fetch a pointer to a storage volume based on its
+     |      globally unique key
+     |  
+     |  storageVolLookupByPath(self, path)
+     |      Fetch a pointer to a storage volume based on its
+     |      locally (host) unique path
+     |  
+     |  suspendForDuration(self, target, duration, flags)
+     |      Attempt to suspend the node (host machine) for the given duration of
+     |      time in the specified state (Suspend-to-RAM, Suspend-to-Disk or
+     |      Hybrid-Suspend). Schedule the node's Real-Time-Clock interrupt to
+     |      resume the node after the duration is complete.
+     |  
+     |  unregisterCloseCallback(self)
+     |      Removes a close event callback
+     |  
+     |  virConnGetLastError(self)
+     |      Provide a pointer to the last error caught on that connection
+     |      
+     |      This method is not protected against access from multiple
+     |      threads. In a multi-threaded application, always use the
+     |      global virGetLastError() API which is backed by thread
+     |      local storage.
+     |      
+     |      If the connection object was discovered to be invalid by
+     |      an API call, then the error will be reported against the
+     |      global error object.
+     |      
+     |      Since 0.6.0, all errors reported in the per-connection object
+     |      are also duplicated in the global error object. As such an
+     |      application can always use virGetLastError(). This method
+     |      remains for backwards compatibility.
+     |  
+     |  virConnResetLastError(self)
+     |      The error object is kept in thread local storage, so separate
+     |      threads can safely access this concurrently.
+     |      
+     |      Reset the last error caught on that connection
+    
+    class virDomain
+     |  Methods defined here:
+     |  
+     |  ID(self)
+     |      Get the hypervisor ID number for the domain
+     |  
+     |  OSType(self)
+     |      Get the type of domain operation system.
+     |  
+     |  UUID(self)
+     |      Extract the UUID unique Identifier of a domain.
+     |  
+     |  UUIDString(self)
+     |      Fetch globally unique ID of the domain as a string.
+     |  
+     |  XMLDesc(self, flags)
+     |      Provide an XML description of the domain. The description may be reused
+     |      later to relaunch the domain with virDomainCreateXML().
+     |      
+     |      No security-sensitive data will be included unless @flags contains
+     |      VIR_DOMAIN_XML_SECURE; this flag is rejected on read-only
+     |      connections.  If @flags includes VIR_DOMAIN_XML_INACTIVE, then the
+     |      XML represents the configuration that will be used on the next boot
+     |      of a persistent domain; otherwise, the configuration represents the
+     |      currently running domain.  If @flags contains
+     |      VIR_DOMAIN_XML_UPDATE_CPU, then the portion of the domain XML
+     |      describing CPU capabilities is modified to match actual
+     |      capabilities of the host.
+     |  
+     |  __del__(self)
+     |  
+     |  __init__(self, conn, _obj=None)
+     |  
+     |  abortJob(self)
+     |      Requests that the current background job be aborted at the
+     |      soonest opportunity.
+     |  
+     |  attachDevice(self, xml)
+     |      Create a virtual device attachment to backend.  This function,
+     |      having hotplug semantics, is only allowed on an active domain.
+     |      
+     |      For compatibility, this method can also be used to change the media
+     |      in an existing CDROM/Floppy device, however, applications are
+     |      recommended to use the virDomainUpdateDeviceFlag method instead.
+     |      
+     |      Be aware that hotplug changes might not persist across a domain going
+     |      into S4 state (also known as hibernation) unless you also modify the
+     |      persistent domain definition.
+     |  
+     |  attachDeviceFlags(self, xml, flags)
+     |      Attach a virtual device to a domain, using the flags parameter
+     |      to control how the device is attached.  VIR_DOMAIN_AFFECT_CURRENT
+     |      specifies that the device allocation is made based on current domain
+     |      state.  VIR_DOMAIN_AFFECT_LIVE specifies that the device shall be
+     |      allocated to the active domain instance only and is not added to the
+     |      persisted domain configuration.  VIR_DOMAIN_AFFECT_CONFIG
+     |      specifies that the device shall be allocated to the persisted domain
+     |      configuration only.  Note that the target hypervisor must return an
+     |      error if unable to satisfy flags.  E.g. the hypervisor driver will
+     |      return failure if LIVE is specified but it only supports modifying the
+     |      persisted device allocation.
+     |      
+     |      For compatibility, this method can also be used to change the media
+     |      in an existing CDROM/Floppy device, however, applications are
+     |      recommended to use the virDomainUpdateDeviceFlag method instead.
+     |      
+     |      Be aware that hotplug changes might not persist across a domain going
+     |      into S4 state (also known as hibernation) unless you also modify the
+     |      persistent domain definition.
+     |  
+     |  autostart(self)
+     |      Extract the autostart flag for a domain
+     |  
+     |  blkioParameters(self, flags)
+     |      Get the blkio parameters
+     |  
+     |  blockCommit(self, disk, base, top, bandwidth, flags)
+     |      Commit changes that were made to temporary top-level files within a disk
+     |      image backing file chain into a lower-level base file.  In other words,
+     |      take all the difference between @base and @top, and update @base to contain
+     |      that difference; after the commit, any portion of the chain that previously
+     |      depended on @top will now depend on @base, and all files after @base up
+     |      to and including @top will now be invalidated.  A typical use of this
+     |      command is to reduce the length of a backing file chain after taking an
+     |      external disk snapshot.  To move data in the opposite direction, see
+     |      virDomainBlockPull().
+     |      
+     |      This command starts a long-running commit block job, whose status may
+     |      be tracked by virDomainBlockJobInfo() with a job type of
+     |      VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT, and the operation can be aborted with
+     |      virDomainBlockJobAbort().  When finished, an asynchronous event is
+     |      raised to indicate the final status, and the job no longer exists.  If
+     |      the job is aborted, it is up to the hypervisor whether starting a new
+     |      job will resume from the same point, or start over.
+     |      
+     |      Be aware that this command may invalidate files even if it is aborted;
+     |      the user is cautioned against relying on the contents of invalidated
+     |      intermediate files such as @top without manually rebasing those files
+     |      to use a backing file of a read-only copy of @base prior to the point
+     |      where the commit operation was started (although such a rebase cannot
+     |      be safely done until the commit has successfully completed).  However,
+     |      the domain itself will not have any issues; the active layer remains
+     |      valid throughout the entire commit operation.  As a convenience,
+     |      if @flags contains VIR_DOMAIN_BLOCK_COMMIT_DELETE, this command will
+     |      unlink all files that were invalidated, after the commit successfully
+     |      completes.
+     |      
+     |      By default, if @base is None, the commit target will be the bottom of
+     |      the backing chain; if @flags contains VIR_DOMAIN_BLOCK_COMMIT_SHALLOW,
+     |      then the immediate backing file of @top will be used instead.  If @top
+     |      is None, the active image at the top of the chain will be used.  Some
+     |      hypervisors place restrictions on how much can be committed, and might
+     |      fail if @base is not the immediate backing file of @top, or if @top is
+     |      the active layer in use by a running domain, or if @top is not the
+     |      top-most file; restrictions may differ for online vs. offline domains.
+     |      
+     |      The @disk parameter is either an unambiguous source name of the
+     |      block device (the <source file='...'/> sub-element, such as
+     |      "/path/to/image"), or the device target shorthand (the
+     |      <target dev='...'/> sub-element, such as "xvda").  Valid names
+     |      can be found by calling virDomainGetXMLDesc() and inspecting
+     |      elements within //domain/devices/disk.
+     |      
+     |      The maximum bandwidth (in MiB/s) that will be used to do the commit can be
+     |      specified with the bandwidth parameter.  If set to 0, libvirt will choose a
+     |      suitable default.  Some hypervisors do not support this feature and will
+     |      return an error if bandwidth is not 0; in this case, it might still be
+     |      possible for a later call to virDomainBlockJobSetSpeed() to succeed.
+     |      The actual speed can be determined with virDomainGetBlockJobInfo().
+     |  
+     |  blockInfo(self, path, flags)
+     |      Extract information about a domain block device size
+     |  
+     |  blockIoTune(self, disk, flags)
+     |      Get the I/O tunables for a block device
+     |  
+     |  blockJobAbort(self, disk, flags)
+     |      Cancel the active block job on the given disk.
+     |      
+     |      The @disk parameter is either an unambiguous source name of the
+     |      block device (the <source file='...'/> sub-element, such as
+     |      "/path/to/image"), or (since 0.9.5) the device target shorthand
+     |      (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+     |      can be found by calling virDomainGetXMLDesc() and inspecting
+     |      elements within //domain/devices/disk.
+     |      
+     |      If the current block job for @disk is VIR_DOMAIN_BLOCK_JOB_TYPE_PULL, then
+     |      by default, this function performs a synchronous operation and the caller
+     |      may assume that the operation has completed when 0 is returned.  However,
+     |      BlockJob operations may take a long time to cancel, and during this time
+     |      further domain interactions may be unresponsive.  To avoid this problem,
+     |      pass VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC in the @flags argument to enable
+     |      asynchronous behavior, returning as soon as possible.  When the job has
+     |      been canceled, a BlockJob event will be emitted, with status
+     |      VIR_DOMAIN_BLOCK_JOB_CANCELED (even if the ABORT_ASYNC flag was not
+     |      used); it is also possible to poll virDomainBlockJobInfo() to see if
+     |      the job cancellation is still pending.  This type of job can be restarted
+     |      to pick up from where it left off.
+     |      
+     |      If the current block job for @disk is VIR_DOMAIN_BLOCK_JOB_TYPE_COPY, then
+     |      the default is to abort the mirroring and revert to the source disk;
+     |      adding @flags of VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT causes this call to
+     |      fail with VIR_ERR_BLOCK_COPY_ACTIVE if the copy is not fully populated,
+     |      otherwise it will swap the disk over to the copy to end the mirroring.  An
+     |      event will be issued when the job is ended, and it is possible to use
+     |      VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC to control whether this command waits
+     |      for the completion of the job.  Restarting this job requires starting
+     |      over from the beginning of the first phase.
+     |  
+     |  blockJobInfo(self, path, flags)
+     |      Get progress information for a block job
+     |  
+     |  blockJobSetSpeed(self, disk, bandwidth, flags)
+     |      Set the maximimum allowable bandwidth that a block job may consume.  If
+     |      bandwidth is 0, the limit will revert to the hypervisor default.
+     |      
+     |      The @disk parameter is either an unambiguous source name of the
+     |      block device (the <source file='...'/> sub-element, such as
+     |      "/path/to/image"), or (since 0.9.5) the device target shorthand
+     |      (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+     |      can be found by calling virDomainGetXMLDesc() and inspecting
+     |      elements within //domain/devices/disk.
+     |  
+     |  blockPeek(self, disk, offset, size, flags)
+     |      Read the contents of domain's disk device
+     |  
+     |  blockPull(self, disk, bandwidth, flags)
+     |      Populate a disk image with data from its backing image.  Once all data from
+     |      its backing image has been pulled, the disk no longer depends on a backing
+     |      image.  This function pulls data for the entire device in the background.
+     |      Progress of the operation can be checked with virDomainGetBlockJobInfo() and
+     |      the operation can be aborted with virDomainBlockJobAbort().  When finished,
+     |      an asynchronous event is raised to indicate the final status.  To move
+     |      data in the opposite direction, see virDomainBlockCommit().
+     |      
+     |      The @disk parameter is either an unambiguous source name of the
+     |      block device (the <source file='...'/> sub-element, such as
+     |      "/path/to/image"), or (since 0.9.5) the device target shorthand
+     |      (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+     |      can be found by calling virDomainGetXMLDesc() and inspecting
+     |      elements within //domain/devices/disk.
+     |      
+     |      The maximum bandwidth (in MiB/s) that will be used to do the copy can be
+     |      specified with the bandwidth parameter.  If set to 0, libvirt will choose a
+     |      suitable default.  Some hypervisors do not support this feature and will
+     |      return an error if bandwidth is not 0; in this case, it might still be
+     |      possible for a later call to virDomainBlockJobSetSpeed() to succeed.
+     |      The actual speed can be determined with virDomainGetBlockJobInfo().
+     |      
+     |      This is shorthand for virDomainBlockRebase() with a None base.
+     |  
+     |  blockRebase(self, disk, base, bandwidth, flags)
+     |      Populate a disk image with data from its backing image chain, and
+     |      setting the backing image to @base, or alternatively copy an entire
+     |      backing chain to a new file @base.
+     |      
+     |      When @flags is 0, this starts a pull, where @base must be the absolute
+     |      path of one of the backing images further up the chain, or None to
+     |      convert the disk image so that it has no backing image.  Once all
+     |      data from its backing image chain has been pulled, the disk no
+     |      longer depends on those intermediate backing images.  This function
+     |      pulls data for the entire device in the background.  Progress of
+     |      the operation can be checked with virDomainGetBlockJobInfo() with a
+     |      job type of VIR_DOMAIN_BLOCK_JOB_TYPE_PULL, and the operation can be
+     |      aborted with virDomainBlockJobAbort().  When finished, an asynchronous
+     |      event is raised to indicate the final status, and the job no longer
+     |      exists.  If the job is aborted, a new one can be started later to
+     |      resume from the same point.
+     |      
+     |      When @flags includes VIR_DOMAIN_BLOCK_REBASE_COPY, this starts a copy,
+     |      where @base must be the name of a new file to copy the chain to.  By
+     |      default, the copy will pull the entire source chain into the destination
+     |      file, but if @flags also contains VIR_DOMAIN_BLOCK_REBASE_SHALLOW, then
+     |      only the top of the source chain will be copied (the source and
+     |      destination have a common backing file).  By default, @base will be
+     |      created with the same file format as the source, but this can be altered
+     |      by adding VIR_DOMAIN_BLOCK_REBASE_COPY_RAW to force the copy to be raw
+     |      (does not make sense with the shallow flag unless the source is also raw),
+     |      or by using VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT to reuse an existing file
+     |      with initial contents identical to the backing file of the source (this
+     |      allows a management app to pre-create files with relative backing file
+     |      names, rather than the default of absolute backing file names; as a
+     |      security precaution, you should generally only use reuse_ext with the
+     |      shallow flag and a non-raw destination file).
+     |      
+     |      A copy job has two parts; in the first phase, the @bandwidth parameter
+     |      affects how fast the source is pulled into the destination, and the job
+     |      can only be canceled by reverting to the source file; progress in this
+     |      phase can be tracked via the virDomainBlockJobInfo() command, with a
+     |      job type of VIR_DOMAIN_BLOCK_JOB_TYPE_COPY.  The job transitions to the
+     |      second phase when the job info states cur == end, and remains alive to
+     |      mirror all further changes to both source and destination.  The user
+     |      must call virDomainBlockJobAbort() to end the mirroring while choosing
+     |      whether to revert to source or pivot to the destination.  An event is
+     |      issued when the job ends, and depending on the hypervisor, an event may
+     |      also be issued when the job transitions from pulling to mirroring.  If
+     |      the job is aborted, a new job will have to start over from the beginning
+     |      of the first phase.
+     |      
+     |      Some hypervisors will restrict certain actions, such as virDomainSave()
+     |      or virDomainDetachDevice(), while a copy job is active; they may
+     |      also restrict a copy job to transient domains.
+     |      
+     |      The @disk parameter is either an unambiguous source name of the
+     |      block device (the <source file='...'/> sub-element, such as
+     |      "/path/to/image"), or the device target shorthand (the
+     |      <target dev='...'/> sub-element, such as "xvda").  Valid names
+     |      can be found by calling virDomainGetXMLDesc() and inspecting
+     |      elements within //domain/devices/disk.
+     |      
+     |      The maximum bandwidth (in MiB/s) that will be used to do the copy can be
+     |      specified with the bandwidth parameter.  If set to 0, libvirt will choose a
+     |      suitable default.  Some hypervisors do not support this feature and will
+     |      return an error if bandwidth is not 0; in this case, it might still be
+     |      possible for a later call to virDomainBlockJobSetSpeed() to succeed.
+     |      The actual speed can be determined with virDomainGetBlockJobInfo().
+     |      
+     |      When @base is None and @flags is 0, this is identical to
+     |      virDomainBlockPull().
+     |  
+     |  blockResize(self, disk, size, flags)
+     |      Resize a block device of domain while the domain is running.  If
+     |      @flags is 0, then @size is in kibibytes (blocks of 1024 bytes);
+     |      since 0.9.11, if @flags includes VIR_DOMAIN_BLOCK_RESIZE_BYTES,
+     |      @size is in bytes instead.  @size is taken directly as the new
+     |      size.  Depending on the file format, the hypervisor may round up
+     |      to the next alignment boundary.
+     |      
+     |      The @disk parameter is either an unambiguous source name of the
+     |      block device (the <source file='...'/> sub-element, such as
+     |      "/path/to/image"), or (since 0.9.5) the device target shorthand
+     |      (the <target dev='...'/> sub-element, such as "xvda").  Valid names
+     |      can be found by calling virDomainGetXMLDesc() and inspecting
+     |      elements within //domain/devices/disk.
+     |      
+     |      Note that this call may fail if the underlying virtualization hypervisor
+     |      does not support it; this call requires privileged access to the
+     |      hypervisor.
+     |  
+     |  blockStats(self, path)
+     |      Extracts block device statistics for a domain
+     |  
+     |  blockStatsFlags(self, path, flags)
+     |      Extracts block device statistics parameters of a running domain
+     |  
+     |  connect(self)
+     |  
+     |  controlInfo(self, flags)
+     |      Extract details about current state of control interface to a domain.
+     |  
+     |  coreDump(self, to, flags)
+     |      This method will dump the core of a domain on a given file for analysis.
+     |      Note that for remote Xen Daemon the file path will be interpreted in
+     |      the remote host. Hypervisors may require  the user to manually ensure
+     |      proper permissions on the file named by @to.
+     |      
+     |      If @flags includes VIR_DUMP_CRASH, then leave the guest shut off with
+     |      a crashed state after the dump completes.  If @flags includes
+     |      VIR_DUMP_LIVE, then make the core dump while continuing to allow
+     |      the guest to run; otherwise, the guest is suspended during the dump.
+     |      VIR_DUMP_RESET flag forces reset of the quest after dump.
+     |      The above three flags are mutually exclusive.
+     |      
+     |      Additionally, if @flags includes VIR_DUMP_BYPASS_CACHE, then libvirt
+     |      will attempt to bypass the file system cache while creating the file,
+     |      or fail if it cannot do so for the given system; this can allow less
+     |      pressure on file system cache, but also risks slowing saves to NFS.
+     |  
+     |  create(self)
+     |      Launch a defined domain. If the call succeeds the domain moves from the
+     |      defined to the running domains pools.  The domain will be paused only
+     |      if restoring from managed state created from a paused domain.  For more
+     |      control, see virDomainCreateWithFlags().
+     |  
+     |  createWithFlags(self, flags)
+     |      Launch a defined domain. If the call succeeds the domain moves from the
+     |      defined to the running domains pools.
+     |      
+     |      If the VIR_DOMAIN_START_PAUSED flag is set, or if the guest domain
+     |      has a managed save image that requested paused state (see
+     |      virDomainManagedSave()) the guest domain will be started, but its
+     |      CPUs will remain paused. The CPUs can later be manually started
+     |      using virDomainResume().  In all other cases, the guest domain will
+     |      be running.
+     |      
+     |      If the VIR_DOMAIN_START_AUTODESTROY flag is set, the guest
+     |      domain will be automatically destroyed when the virConnectPtr
+     |      object is finally released. This will also happen if the
+     |      client application crashes / loses its connection to the
+     |      libvirtd daemon. Any domains marked for auto destroy will
+     |      block attempts at migration, save-to-file, or snapshots.
+     |      
+     |      If the VIR_DOMAIN_START_BYPASS_CACHE flag is set, and there is a
+     |      managed save file for this domain (created by virDomainManagedSave()),
+     |      then libvirt will attempt to bypass the file system cache while restoring
+     |      the file, or fail if it cannot do so for the given system; this can allow
+     |      less pressure on file system cache, but also risks slowing loads from NFS.
+     |      
+     |      If the VIR_DOMAIN_START_FORCE_BOOT flag is set, then any managed save
+     |      file for this domain is discarded, and the domain boots from scratch.
+     |  
+     |  destroy(self)
+     |      Destroy the domain object. The running instance is shutdown if not down
+     |      already and all resources used by it are given back to the hypervisor. This
+     |      does not free the associated virDomainPtr object.
+     |      This function may require privileged access.
+     |      
+     |      virDomainDestroy first requests that a guest terminate
+     |      (e.g. SIGTERM), then waits for it to comply. After a reasonable
+     |      timeout, if the guest still exists, virDomainDestroy will
+     |      forcefully terminate the guest (e.g. SIGKILL) if necessary (which
+     |      may produce undesirable results, for example unflushed disk cache
+     |      in the guest). To avoid this possibility, it's recommended to
+     |      instead call virDomainDestroyFlags, sending the
+     |      VIR_DOMAIN_DESTROY_GRACEFUL flag.
+     |      
+     |      If the domain is transient and has any snapshot metadata (see
+     |      virDomainSnapshotNum()), then that metadata will automatically
+     |      be deleted when the domain quits.
+     |  
+     |  destroyFlags(self, flags)
+     |      Destroy the domain object. The running instance is shutdown if not down
+     |      already and all resources used by it are given back to the hypervisor.
+     |      This does not free the associated virDomainPtr object.
+     |      This function may require privileged access.
+     |      
+     |      Calling this function with no @flags set (equal to zero) is
+     |      equivalent to calling virDomainDestroy, and after a reasonable
+     |      timeout will forcefully terminate the guest (e.g. SIGKILL) if
+     |      necessary (which may produce undesirable results, for example
+     |      unflushed disk cache in the guest). Including
+     |      VIR_DOMAIN_DESTROY_GRACEFUL in the flags will prevent the forceful
+     |      termination of the guest, and virDomainDestroyFlags will instead
+     |      return an error if the guest doesn't terminate by the end of the
+     |      timeout; at that time, the management application can decide if
+     |      calling again without VIR_DOMAIN_DESTROY_GRACEFUL is appropriate.
+     |      
+     |      Another alternative which may produce cleaner results for the
+     |      guest's disks is to use virDomainShutdown() instead, but that
+     |      depends on guest support (some hypervisor/guest combinations may
+     |      ignore the shutdown request).
+     |  
+     |  detachDevice(self, xml)
+     |      Destroy a virtual device attachment to backend.  This function,
+     |      having hot-unplug semantics, is only allowed on an active domain.
+     |      
+     |      Be aware that hotplug changes might not persist across a domain going
+     |      into S4 state (also known as hibernation) unless you also modify the
+     |      persistent domain definition.
+     |  
+     |  detachDeviceFlags(self, xml, flags)
+     |      Detach a virtual device from a domain, using the flags parameter
+     |      to control how the device is detached.  VIR_DOMAIN_AFFECT_CURRENT
+     |      specifies that the device allocation is removed based on current domain
+     |      state.  VIR_DOMAIN_AFFECT_LIVE specifies that the device shall be
+     |      deallocated from the active domain instance only and is not from the
+     |      persisted domain configuration.  VIR_DOMAIN_AFFECT_CONFIG
+     |      specifies that the device shall be deallocated from the persisted domain
+     |      configuration only.  Note that the target hypervisor must return an
+     |      error if unable to satisfy flags.  E.g. the hypervisor driver will
+     |      return failure if LIVE is specified but it only supports removing the
+     |      persisted device allocation.
+     |      
+     |      Some hypervisors may prevent this operation if there is a current
+     |      block copy operation on the device being detached; in that case,
+     |      use virDomainBlockJobAbort() to stop the block copy first.
+     |      
+     |      Beware that depending on the hypervisor and device type, detaching a device
+     |      from a running domain may be asynchronous. That is, calling
+     |      virDomainDetachDeviceFlags may just request device removal while the device
+     |      is actually removed later (in cooperation with a guest OS). Previously,
+     |      this fact was ignored and the device could have been removed from domain
+     |      configuration before it was actually removed by the hypervisor causing
+     |      various failures on subsequent operations. To check whether the device was
+     |      successfully removed, either recheck domain configuration using
+     |      virDomainGetXMLDesc() or add handler for VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED
+     |      event. In case the device is already gone when virDomainDetachDeviceFlags
+     |      returns, the event is delivered before this API call ends. To help existing
+     |      clients work better in most cases, this API will try to transform an
+     |      asynchronous device removal that finishes shortly after the request into
+     |      a synchronous removal. In other words, this API may wait a bit for the
+     |      removal to complete in case it was not synchronous.
+     |      
+     |      Be aware that hotplug changes might not persist across a domain going
+     |      into S4 state (also known as hibernation) unless you also modify the
+     |      persistent domain definition.
+     |  
+     |  diskErrors(self, flags)
+     |      Extract errors on disk devices.
+     |  
+     |  emulatorPinInfo(self, cpumap, maplen, flags)
+     |      Query the CPU affinity setting of all emulator threads of domain, store
+     |      it in cpumap.
+     |  
+     |  getCPUStats(self, total, flags)
+     |      Extracts CPU statistics for a running domain. On success it will
+     |      return a list of data of dictionary type. If boolean total is False or 0, the
+     |      first element of the list refers to CPU0 on the host, second element is
+     |      CPU1, and so on. The format of data struct is as follows:
+     |      [{cpu_time:xxx}, {cpu_time:xxx}, ...]
+     |      If it is True or 1, it returns total domain CPU statistics in the format of
+     |      [{cpu_time:xxx, user_time:xxx, system_time:xxx}]
+     |  
+     |  hasCurrentSnapshot(self, flags)
+     |      Determine if the domain has a current snapshot.
+     |  
+     |  hasManagedSaveImage(self, flags)
+     |      Check if a domain has a managed save image as created by
+     |      virDomainManagedSave(). Note that any running domain should not have
+     |      such an image, as it should have been removed on restart.
+     |  
+     |  hostname(self, flags)
+     |      Get the hostname for that domain.
+     |      
+     |      Dependent on hypervisor used, this may require a guest agent to be
+     |      available.
+     |  
+     |  info(self)
+     |      Extract information about a domain. Note that if the connection used to get the domain is limited only a partial set of the information can be extracted.
+     |  
+     |  injectNMI(self, flags)
+     |      Send NMI to the guest
+     |  
+     |  interfaceParameters(self, device, flags)
+     |      Get the bandwidth tunables for a interface device
+     |  
+     |  interfaceStats(self, path)
+     |      Extracts interface device statistics for a domain
+     |  
+     |  isActive(self)
+     |      Determine if the domain is currently running
+     |  
+     |  isPersistent(self)
+     |      Determine if the domain has a persistent configuration
+     |      which means it will still exist after shutting down
+     |  
+     |  isUpdated(self)
+     |      Determine if the domain has been updated.
+     |  
+     |  jobInfo(self)
+     |      Extract information about an active job being processed for a domain.
+     |  
+     |  listAllSnapshots(self, flags)
+     |      List all snapshots and returns a list of snapshot objects
+     |  
+     |  managedSave(self, flags)
+     |      This method will suspend a domain and save its memory contents to
+     |      a file on disk. After the call, if successful, the domain is not
+     |      listed as running anymore.
+     |      The difference from virDomainSave() is that libvirt is keeping track of
+     |      the saved state itself, and will reuse it once the domain is being
+     |      restarted (automatically or via an explicit libvirt call).
+     |      As a result any running domain is sure to not have a managed saved image.
+     |      This also implies that managed save only works on persistent domains,
+     |      since the domain must still exist in order to use virDomainCreate() to
+     |      restart it.
+     |      
+     |      If @flags includes VIR_DOMAIN_SAVE_BYPASS_CACHE, then libvirt will
+     |      attempt to bypass the file system cache while creating the file, or
+     |      fail if it cannot do so for the given system; this can allow less
+     |      pressure on file system cache, but also risks slowing saves to NFS.
+     |      
+     |      Normally, the managed saved state will remember whether the domain
+     |      was running or paused, and start will resume to the same state.
+     |      Specifying VIR_DOMAIN_SAVE_RUNNING or VIR_DOMAIN_SAVE_PAUSED in
+     |      @flags will override the default saved into the file.  These two
+     |      flags are mutually exclusive.
+     |  
+     |  managedSaveRemove(self, flags)
+     |      Remove any managed save image for this domain.
+     |  
+     |  maxMemory(self)
+     |      Retrieve the maximum amount of physical memory allocated to a
+     |      domain. If domain is None, then this get the amount of memory reserved
+     |      to Domain0 i.e. the domain where the application runs.
+     |  
+     |  maxVcpus(self)
+     |      Provides the maximum number of virtual CPUs supported for
+     |      the guest VM. If the guest is inactive, this is basically
+     |      the same as virConnectGetMaxVcpus(). If the guest is running
+     |      this will reflect the maximum number of virtual CPUs the
+     |      guest was booted with.  For more details, see virDomainGetVcpusFlags().
+     |  
+     |  memoryParameters(self, flags)
+     |      Get the memory parameters
+     |  
+     |  memoryPeek(self, start, size, flags)
+     |      Read the contents of domain's memory
+     |  
+     |  memoryStats(self)
+     |      Extracts memory statistics for a domain
+     |  
+     |  metadata(self, type, uri, flags)
+     |      Retrieves the appropriate domain element given by @type.
+     |      If VIR_DOMAIN_METADATA_ELEMENT is requested parameter @uri
+     |      must be set to the name of the namespace the requested elements
+     |      belong to, otherwise must be None.
+     |      
+     |      If an element of the domain XML is not present, the resulting
+     |      error will be VIR_ERR_NO_DOMAIN_METADATA.  This method forms
+     |      a shortcut for seeing information from virDomainSetMetadata()
+     |      without having to go through virDomainGetXMLDesc().
+     |      
+     |      @flags controls whether the live domain or persistent
+     |      configuration will be queried.
+     |  
+     |  migrate(self, dconn, flags, dname, uri, bandwidth)
+     |      Migrate the domain object from its current host to the destination
+     |      host given by dconn (a connection to the destination host).
+     |      
+     |      Flags may be one of more of the following:
+     |        VIR_MIGRATE_LIVE      Do not pause the VM during migration
+     |        VIR_MIGRATE_PEER2PEER Direct connection between source & destination hosts
+     |        VIR_MIGRATE_TUNNELLED Tunnel migration data over the libvirt RPC channel
+     |        VIR_MIGRATE_PERSIST_DEST If the migration is successful, persist the domain
+     |                                 on the destination host.
+     |        VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
+     |                                    domain on the source host.
+     |        VIR_MIGRATE_PAUSED    Leave the domain suspended on the remote side.
+     |        VIR_MIGRATE_CHANGE_PROTECTION Protect against domain configuration
+     |                                      changes during the migration process (set
+     |                                      automatically when supported).
+     |        VIR_MIGRATE_UNSAFE    Force migration even if it is considered unsafe.
+     |      
+     |      VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
+     |      Applications using the VIR_MIGRATE_PEER2PEER flag will probably
+     |      prefer to invoke virDomainMigrateToURI, avoiding the need to
+     |      open connection to the destination host themselves.
+     |      
+     |      If a hypervisor supports renaming domains during migration,
+     |      then you may set the dname parameter to the new name (otherwise
+     |      it keeps the same name).  If this is not supported by the
+     |      hypervisor, dname must be None or else you will get an error.
+     |      
+     |      If the VIR_MIGRATE_PEER2PEER flag is set, the uri parameter
+     |      must be a valid libvirt connection URI, by which the source
+     |      libvirt driver can connect to the destination libvirt. If
+     |      omitted, the dconn connection object will be queried for its
+     |      current URI.
+     |      
+     |      If the VIR_MIGRATE_PEER2PEER flag is NOT set, the URI parameter
+     |      takes a hypervisor specific format. The hypervisor capabilities
+     |      XML includes details of the support URI schemes. If omitted
+     |      the dconn will be asked for a default URI.
+     |      
+     |      In either case it is typically only necessary to specify a
+     |      URI if the destination host has multiple interfaces and a
+     |      specific interface is required to transmit migration data.
+     |      
+     |      The maximum bandwidth (in MiB/s) that will be used to do migration
+     |      can be specified with the bandwidth parameter.  If set to 0,
+     |      libvirt will choose a suitable default.  Some hypervisors do
+     |      not support this feature and will return an error if bandwidth
+     |      is not 0.
+     |      
+     |      To see which features are supported by the current hypervisor,
+     |      see virConnectGetCapabilities, /capabilities/host/migration_features.
+     |      
+     |      There are many limitations on migration imposed by the underlying
+     |      technology - for example it may not be possible to migrate between
+     |      different processors even with the same architecture, or between
+     |      different types of hypervisor.
+     |  
+     |  migrate2(self, dconn, dxml, flags, dname, uri, bandwidth)
+     |      Migrate the domain object from its current host to the destination
+     |      host given by dconn (a connection to the destination host).
+     |      
+     |      Flags may be one of more of the following:
+     |        VIR_MIGRATE_LIVE      Do not pause the VM during migration
+     |        VIR_MIGRATE_PEER2PEER Direct connection between source & destination hosts
+     |        VIR_MIGRATE_TUNNELLED Tunnel migration data over the libvirt RPC channel
+     |        VIR_MIGRATE_PERSIST_DEST If the migration is successful, persist the domain
+     |                                 on the destination host.
+     |        VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
+     |                                    domain on the source host.
+     |        VIR_MIGRATE_PAUSED    Leave the domain suspended on the remote side.
+     |        VIR_MIGRATE_CHANGE_PROTECTION Protect against domain configuration
+     |                                      changes during the migration process (set
+     |                                      automatically when supported).
+     |        VIR_MIGRATE_UNSAFE    Force migration even if it is considered unsafe.
+     |      
+     |      VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
+     |      Applications using the VIR_MIGRATE_PEER2PEER flag will probably
+     |      prefer to invoke virDomainMigrateToURI, avoiding the need to
+     |      open connection to the destination host themselves.
+     |      
+     |      If a hypervisor supports renaming domains during migration,
+     |      then you may set the dname parameter to the new name (otherwise
+     |      it keeps the same name).  If this is not supported by the
+     |      hypervisor, dname must be None or else you will get an error.
+     |      
+     |      If the VIR_MIGRATE_PEER2PEER flag is set, the uri parameter
+     |      must be a valid libvirt connection URI, by which the source
+     |      libvirt driver can connect to the destination libvirt. If
+     |      omitted, the dconn connection object will be queried for its
+     |      current URI.
+     |      
+     |      If the VIR_MIGRATE_PEER2PEER flag is NOT set, the URI parameter
+     |      takes a hypervisor specific format. The hypervisor capabilities
+     |      XML includes details of the support URI schemes. If omitted
+     |      the dconn will be asked for a default URI.
+     |      
+     |      In either case it is typically only necessary to specify a
+     |      URI if the destination host has multiple interfaces and a
+     |      specific interface is required to transmit migration data.
+     |      
+     |      The maximum bandwidth (in MiB/s) that will be used to do migration
+     |      can be specified with the bandwidth parameter.  If set to 0,
+     |      libvirt will choose a suitable default.  Some hypervisors do
+     |      not support this feature and will return an error if bandwidth
+     |      is not 0.
+     |      
+     |      To see which features are supported by the current hypervisor,
+     |      see virConnectGetCapabilities, /capabilities/host/migration_features.
+     |      
+     |      There are many limitations on migration imposed by the underlying
+     |      technology - for example it may not be possible to migrate between
+     |      different processors even with the same architecture, or between
+     |      different types of hypervisor.
+     |      
+     |      If the hypervisor supports it, @dxml can be used to alter
+     |      host-specific portions of the domain XML that will be used on
+     |      the destination.  For example, it is possible to alter the
+     |      backing filename that is associated with a disk device, in order
+     |      to account for naming differences between source and destination
+     |      in accessing the underlying storage.  The migration will fail
+     |      if @dxml would cause any guest-visible changes.  Pass None
+     |      if no changes are needed to the XML between source and destination.
+     |      @dxml cannot be used to rename the domain during migration (use
+     |      @dname for that purpose).  Domain name in @dxml must match the
+     |      original domain name.
+     |  
+     |  migrateGetMaxSpeed(self, flags)
+     |      Get currently configured maximum migration speed for a domain
+     |  
+     |  migrateSetMaxDowntime(self, downtime, flags)
+     |      Sets maximum tolerable time for which the domain is allowed to be paused
+     |      at the end of live migration. It's supposed to be called while the domain is
+     |      being live-migrated as a reaction to migration progress.
+     |  
+     |  migrateSetMaxSpeed(self, bandwidth, flags)
+     |      The maximum bandwidth (in MiB/s) that will be used to do migration
+     |      can be specified with the bandwidth parameter. Not all hypervisors
+     |      will support a bandwidth cap
+     |  
+     |  migrateToURI(self, duri, flags, dname, bandwidth)
+     |      Migrate the domain object from its current host to the destination
+     |      host given by duri.
+     |      
+     |      Flags may be one of more of the following:
+     |        VIR_MIGRATE_LIVE      Do not pause the VM during migration
+     |        VIR_MIGRATE_PEER2PEER Direct connection between source & destination hosts
+     |        VIR_MIGRATE_TUNNELLED Tunnel migration data over the libvirt RPC channel
+     |        VIR_MIGRATE_PERSIST_DEST If the migration is successful, persist the domain
+     |                                 on the destination host.
+     |        VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
+     |                                    domain on the source host.
+     |        VIR_MIGRATE_CHANGE_PROTECTION Protect against domain configuration
+     |                                      changes during the migration process (set
+     |                                      automatically when supported).
+     |        VIR_MIGRATE_UNSAFE    Force migration even if it is considered unsafe.
+     |      
+     |      The operation of this API hinges on the VIR_MIGRATE_PEER2PEER flag.
+     |      If the VIR_MIGRATE_PEER2PEER flag is NOT set, the duri parameter
+     |      takes a hypervisor specific format. The uri_transports element of the
+     |      hypervisor capabilities XML includes details of the supported URI
+     |      schemes. Not all hypervisors will support this mode of migration, so
+     |      if the VIR_MIGRATE_PEER2PEER flag is not set, then it may be necessary
+     |      to use the alternative virDomainMigrate API providing and explicit
+     |      virConnectPtr for the destination host.
+     |      
+     |      If the VIR_MIGRATE_PEER2PEER flag IS set, the duri parameter
+     |      must be a valid libvirt connection URI, by which the source
+     |      libvirt driver can connect to the destination libvirt.
+     |      
+     |      VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
+     |      
+     |      If a hypervisor supports renaming domains during migration,
+     |      the dname parameter specifies the new name for the domain.
+     |      Setting dname to None keeps the domain name the same.  If domain
+     |      renaming is not supported by the hypervisor, dname must be None or
+     |      else an error will be returned.
+     |      
+     |      The maximum bandwidth (in MiB/s) that will be used to do migration
+     |      can be specified with the bandwidth parameter.  If set to 0,
+     |      libvirt will choose a suitable default.  Some hypervisors do
+     |      not support this feature and will return an error if bandwidth
+     |      is not 0.
+     |      
+     |      To see which features are supported by the current hypervisor,
+     |      see virConnectGetCapabilities, /capabilities/host/migration_features.
+     |      
+     |      There are many limitations on migration imposed by the underlying
+     |      technology - for example it may not be possible to migrate between
+     |      different processors even with the same architecture, or between
+     |      different types of hypervisor.
+     |  
+     |  migrateToURI2(self, dconnuri, miguri, dxml, flags, dname, bandwidth)
+     |      Migrate the domain object from its current host to the destination
+     |      host given by duri.
+     |      
+     |      Flags may be one of more of the following:
+     |        VIR_MIGRATE_LIVE      Do not pause the VM during migration
+     |        VIR_MIGRATE_PEER2PEER Direct connection between source & destination hosts
+     |        VIR_MIGRATE_TUNNELLED Tunnel migration data over the libvirt RPC channel
+     |        VIR_MIGRATE_PERSIST_DEST If the migration is successful, persist the domain
+     |                                 on the destination host.
+     |        VIR_MIGRATE_UNDEFINE_SOURCE If the migration is successful, undefine the
+     |                                    domain on the source host.
+     |        VIR_MIGRATE_CHANGE_PROTECTION Protect against domain configuration
+     |                                      changes during the migration process (set
+     |                                      automatically when supported).
+     |        VIR_MIGRATE_UNSAFE    Force migration even if it is considered unsafe.
+     |      
+     |      The operation of this API hinges on the VIR_MIGRATE_PEER2PEER flag.
+     |      
+     |      If the VIR_MIGRATE_PEER2PEER flag is set, the @dconnuri parameter
+     |      must be a valid libvirt connection URI, by which the source
+     |      libvirt driver can connect to the destination libvirt. If the
+     |      VIR_MIGRATE_PEER2PEER flag is NOT set, then @dconnuri must be
+     |      None.
+     |      
+     |      If the VIR_MIGRATE_TUNNELLED flag is NOT set, then the @miguri
+     |      parameter allows specification of a URI to use to initiate the
+     |      VM migration. It takes a hypervisor specific format. The uri_transports
+     |      element of the hypervisor capabilities XML includes details of the
+     |      supported URI schemes.
+     |      
+     |      VIR_MIGRATE_TUNNELLED requires that VIR_MIGRATE_PEER2PEER be set.
+     |      
+     |      If a hypervisor supports changing the configuration of the guest
+     |      during migration, the @dxml parameter specifies the new config
+     |      for the guest. The configuration must include an identical set
+     |      of virtual devices, to ensure a stable guest ABI across migration.
+     |      Only parameters related to host side configuration can be
+     |      changed in the XML. Hypervisors will validate this and refuse to
+     |      allow migration if the provided XML would cause a change in the
+     |      guest ABI,
+     |      
+     |      If a hypervisor supports renaming domains during migration,
+     |      the dname parameter specifies the new name for the domain.
+     |      Setting dname to None keeps the domain name the same.  If domain
+     |      renaming is not supported by the hypervisor, dname must be None or
+     |      else an error will be returned.
+     |      
+     |      The maximum bandwidth (in MiB/s) that will be used to do migration
+     |      can be specified with the bandwidth parameter.  If set to 0,
+     |      libvirt will choose a suitable default.  Some hypervisors do
+     |      not support this feature and will return an error if bandwidth
+     |      is not 0.
+     |      
+     |      To see which features are supported by the current hypervisor,
+     |      see virConnectGetCapabilities, /capabilities/host/migration_features.
+     |      
+     |      There are many limitations on migration imposed by the underlying
+     |      technology - for example it may not be possible to migrate between
+     |      different processors even with the same architecture, or between
+     |      different types of hypervisor.
+     |  
+     |  name(self)
+     |      Get the public name for that domain
+     |  
+     |  numaParameters(self, flags)
+     |      Get the NUMA parameters
+     |  
+     |  openConsole(self, dev_name, st, flags)
+     |      This opens the backend associated with a console, serial or
+     |      parallel port device on a guest, if the backend is supported.
+     |      If the @dev_name is omitted, then the first console or serial
+     |      device is opened. The console is associated with the passed
+     |      in @st stream, which should have been opened in non-blocking
+     |      mode for bi-directional I/O.
+     |      
+     |      By default, when @flags is 0, the open will fail if libvirt
+     |      detects that the console is already in use by another client;
+     |      passing VIR_DOMAIN_CONSOLE_FORCE will cause libvirt to forcefully
+     |      remove the other client prior to opening this console.
+     |      
+     |      If flag VIR_DOMAIN_CONSOLE_SAFE the console is opened only in the
+     |      case where the hypervisor driver supports safe (mutually exclusive)
+     |      console handling.
+     |      
+     |      Older servers did not support either flag, and also did not forbid
+     |      simultaneous clients on a console, with potentially confusing results.
+     |      When passing @flags of 0 in order to support a wider range of server
+     |      versions, it is up to the client to ensure mutual exclusion.
+     |  
+     |  openGraphics(self, idx, fd, flags)
+     |      This will attempt to connect the file descriptor @fd, to
+     |      the graphics backend of @dom. If @dom has multiple graphics
+     |      backends configured, then @idx will determine which one is
+     |      opened, starting from @idx 0.
+     |      
+     |      To disable any authentication, pass the VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH
+     |      constant for @flags.
+     |      
+     |      The caller should use an anonymous socketpair to open
+     |      @fd before invocation.
+     |      
+     |      This method can only be used when connected to a local
+     |      libvirt hypervisor, over a UNIX domain socket. Attempts
+     |      to use this method over a TCP connection will always fail
+     |  
+     |  pMSuspendForDuration(self, target, duration, flags)
+     |      Attempt to have the guest enter the given @target power management
+     |      suspension level.  If @duration is non-zero, also schedule the guest to
+     |      resume normal operation after that many seconds, if nothing else has
+     |      resumed it earlier.  Some hypervisors require that @duration be 0, for
+     |      an indefinite suspension.
+     |      
+     |      Dependent on hypervisor used, this may require a
+     |      guest agent to be available, e.g. QEMU.
+     |      
+     |      Beware that at least for QEMU, the domain's process will be terminated
+     |      when VIR_NODE_SUSPEND_TARGET_DISK is used and a new process will be
+     |      launched when libvirt is asked to wake up the domain. As a result of
+     |      this, any runtime changes, such as device hotplug or memory settings,
+     |      are lost unless such changes were made with VIR_DOMAIN_AFFECT_CONFIG
+     |      flag.
+     |  
+     |  pMWakeup(self, flags)
+     |      Inject a wakeup into the guest that previously used
+     |      virDomainPMSuspendForDuration, rather than waiting for the
+     |      previously requested duration (if any) to elapse.
+     |  
+     |  pinEmulator(self, cpumap, maplen, flags)
+     |      Dynamically change the real CPUs which can be allocated to all emulator
+     |      threads. This function may require privileged access to the hypervisor.
+     |      
+     |      @flags may include VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG.
+     |      Both flags may be set.
+     |      If VIR_DOMAIN_AFFECT_LIVE is set, the change affects a running domain
+     |      and may fail if domain is not alive.
+     |      If VIR_DOMAIN_AFFECT_CONFIG is set, the change affects persistent state,
+     |      and will fail for transient domains. If neither flag is specified (that is,
+     |      @flags is VIR_DOMAIN_AFFECT_CURRENT), then an inactive domain modifies
+     |      persistent setup, while an active domain is hypervisor-dependent on whether
+     |      just live or both live and persistent state is changed.
+     |      Not all hypervisors can support all flag combinations.
+     |      
+     |      See also virDomainGetEmulatorPinInfo for querying this information.
+     |  
+     |  pinVcpu(self, vcpu, cpumap)
+     |      Dynamically change the real CPUs which can be allocated to a virtual CPU. This function requires privileged access to the hypervisor.
+     |  
+     |  pinVcpuFlags(self, vcpu, cpumap, flags)
+     |      Dynamically change the real CPUs which can be allocated to a virtual CPU. This function requires privileged access to the hypervisor.
+     |  
+     |  reboot(self, flags)
+     |      Reboot a domain, the domain object is still usable there after but
+     |      the domain OS is being stopped for a restart.
+     |      Note that the guest OS may ignore the request.
+     |      
+     |      If @flags is set to zero, then the hypervisor will choose the
+     |      method of shutdown it considers best. To have greater control
+     |      pass exactly one of the virDomainRebootFlagValues.
+     |      
+     |      To use guest agent (VIR_DOMAIN_REBOOT_GUEST_AGENT) the domain XML
+     |      must have <channel> configured.
+     |      
+     |      Due to implementation limitations in some drivers (the qemu driver,
+     |      for instance) it is not advised to migrate or save a guest that is
+     |      rebooting as a result of this API. Migrating such a guest can lead
+     |      to a plain shutdown on the destination.
+     |  
+     |  reset(self, flags)
+     |      Reset a domain immediately without any guest OS shutdown.
+     |      Reset emulates the power reset button on a machine, where all
+     |      hardware sees the RST line set and reinitializes internal state.
+     |      
+     |      Note that there is a risk of data loss caused by reset without any
+     |      guest OS shutdown.
+     |  
+     |  resume(self)
+     |      Resume a suspended domain, the process is restarted from the state where
+     |      it was frozen by calling virDomainSuspend().
+     |      This function may require privileged access
+     |      Moreover, resume may not be supported if domain is in some
+     |      special state like VIR_DOMAIN_PMSUSPENDED.
+     |  
+     |  revertToSnapshot(self, snap, flags)
+     |      revert the domain to the given snapshot
+     |  
+     |  save(self, to)
+     |      This method will suspend a domain and save its memory contents to
+     |      a file on disk. After the call, if successful, the domain is not
+     |      listed as running anymore (this ends the life of a transient domain).
+     |      Use virDomainRestore() to restore a domain after saving.
+     |      
+     |      See virDomainSaveFlags() for more control.  Also, a save file can
+     |      be inspected or modified slightly with virDomainSaveImageGetXMLDesc()
+     |      and virDomainSaveImageDefineXML().
+     |  
+     |  saveFlags(self, to, dxml, flags)
+     |      This method will suspend a domain and save its memory contents to
+     |      a file on disk. After the call, if successful, the domain is not
+     |      listed as running anymore (this ends the life of a transient domain).
+     |      Use virDomainRestore() to restore a domain after saving.
+     |      
+     |      If the hypervisor supports it, @dxml can be used to alter
+     |      host-specific portions of the domain XML that will be used when
+     |      restoring an image.  For example, it is possible to alter the
+     |      backing filename that is associated with a disk device, in order to
+     |      prepare for file renaming done as part of backing up the disk
+     |      device while the domain is stopped.
+     |      
+     |      If @flags includes VIR_DOMAIN_SAVE_BYPASS_CACHE, then libvirt will
+     |      attempt to bypass the file system cache while creating the file, or
+     |      fail if it cannot do so for the given system; this can allow less
+     |      pressure on file system cache, but also risks slowing saves to NFS.
+     |      
+     |      Normally, the saved state file will remember whether the domain was
+     |      running or paused, and restore defaults to the same state.
+     |      Specifying VIR_DOMAIN_SAVE_RUNNING or VIR_DOMAIN_SAVE_PAUSED in
+     |      @flags will override what state gets saved into the file.  These
+     |      two flags are mutually exclusive.
+     |      
+     |      A save file can be inspected or modified slightly with
+     |      virDomainSaveImageGetXMLDesc() and virDomainSaveImageDefineXML().
+     |      
+     |      Some hypervisors may prevent this operation if there is a current
+     |      block copy operation; in that case, use virDomainBlockJobAbort()
+     |      to stop the block copy first.
+     |  
+     |  schedulerParameters(self)
+     |      Get the scheduler parameters, the @params array will be filled with the values.
+     |  
+     |  schedulerParametersFlags(self, flags)
+     |      Get the scheduler parameters
+     |  
+     |  schedulerType(self)
+     |      Get the scheduler type.
+     |  
+     |  screenshot(self, stream, screen, flags)
+     |      Take a screenshot of current domain console as a stream. The image format
+     |      is hypervisor specific. Moreover, some hypervisors supports multiple
+     |      displays per domain. These can be distinguished by @screen argument.
+     |      
+     |      This call sets up a stream; subsequent use of stream API is necessary
+     |      to transfer actual data, determine how much data is successfully
+     |      transfered, and detect any errors.
+     |      
+     |      The screen ID is the sequential number of screen. In case of multiple
+     |      graphics cards, heads are enumerated before devices, e.g. having
+     |      two graphics cards, both with four heads, screen ID 5 addresses
+     |      the second head on the second card.
+     |  
+     |  sendKey(self, codeset, holdtime, keycodes, nkeycodes, flags)
+     |      Send key(s) to the guest.
+     |  
+     |  setAutostart(self, autostart)
+     |      Configure the domain to be automatically started
+     |      when the host machine boots.
+     |  
+     |  setBlkioParameters(self, params, flags)
+     |      Change the blkio tunables
+     |  
+     |  setBlockIoTune(self, disk, params, flags)
+     |      Change the I/O tunables for a block device
+     |  
+     |  setInterfaceParameters(self, device, params, flags)
+     |      Change the bandwidth tunables for a interface device
+     |  
+     |  setMaxMemory(self, memory)
+     |      Dynamically change the maximum amount of physical memory allocated to a
+     |      domain. If domain is None, then this change the amount of memory reserved
+     |      to Domain0 i.e. the domain where the application runs.
+     |      This function may require privileged access to the hypervisor.
+     |      
+     |      This command is hypervisor-specific for whether active, persistent,
+     |      or both configurations are changed; for more control, use
+     |      virDomainSetMemoryFlags().
+     |  
+     |  setMemory(self, memory)
+     |      Dynamically change the target amount of physical memory allocated to a
+     |      domain. If domain is None, then this change the amount of memory reserved
+     |      to Domain0 i.e. the domain where the application runs.
+     |      This function may require privileged access to the hypervisor.
+     |      
+     |      This command only changes the runtime configuration of the domain,
+     |      so can only be called on an active domain.
+     |  
+     |  setMemoryFlags(self, memory, flags)
+     |      Dynamically change the target amount of physical memory allocated to a
+     |      domain. If domain is None, then this change the amount of memory reserved
+     |      to Domain0 i.e. the domain where the application runs.
+     |      This function may require privileged access to the hypervisor.
+     |      
+     |      @flags may include VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG.
+     |      Both flags may be set. If VIR_DOMAIN_AFFECT_LIVE is set, the change affects
+     |      a running domain and will fail if domain is not active.
+     |      If VIR_DOMAIN_AFFECT_CONFIG is set, the change affects persistent state,
+     |      and will fail for transient domains. If neither flag is specified
+     |      (that is, @flags is VIR_DOMAIN_AFFECT_CURRENT), then an inactive domain
+     |      modifies persistent setup, while an active domain is hypervisor-dependent
+     |      on whether just live or both live and persistent state is changed.
+     |      If VIR_DOMAIN_MEM_MAXIMUM is set, the change affects domain's maximum memory
+     |      size rather than current memory size.
+     |      Not all hypervisors can support all flag combinations.
+     |  
+     |  setMemoryParameters(self, params, flags)
+     |      Change the memory tunables
+     |  
+     |  setMetadata(self, type, metadata, key, uri, flags)
+     |      Sets the appropriate domain element given by @type to the
+     |      value of @description.  A @type of VIR_DOMAIN_METADATA_DESCRIPTION
+     |      is free-form text; VIR_DOMAIN_METADATA_TITLE is free-form, but no
+     |      newlines are permitted, and should be short (although the length is
+     |      not enforced). For these two options @key and @uri are irrelevant and
+     |      must be set to None.
+     |      
+     |      For type VIR_DOMAIN_METADATA_ELEMENT @metadata  must be well-formed
+     |      XML belonging to namespace defined by @uri with local name @key.
+     |      
+     |      Passing None for @metadata says to remove that element from the
+     |      domain XML (passing the empty string leaves the element present).
+     |      
+     |      The resulting metadata will be present in virDomainGetXMLDesc(),
+     |      as well as quick access through virDomainGetMetadata().
+     |      
+     |      @flags controls whether the live domain, persistent configuration,
+     |      or both will be modified.
+     |  
+     |  setNumaParameters(self, params, flags)
+     |      Change the NUMA tunables
+     |  
+     |  setSchedulerParameters(self, params)
+     |      Change the scheduler parameters
+     |  
+     |  setSchedulerParametersFlags(self, params, flags)
+     |      Change the scheduler parameters
+     |  
+     |  setVcpus(self, nvcpus)
+     |      Dynamically change the number of virtual CPUs used by the domain.
+     |      Note that this call may fail if the underlying virtualization hypervisor
+     |      does not support it or if growing the number is arbitrarily limited.
+     |      This function may require privileged access to the hypervisor.
+     |      
+     |      Note that if this call is executed before the guest has finished booting,
+     |      the guest may fail to process the change.
+     |      
+     |      This command only changes the runtime configuration of the domain,
+     |      so can only be called on an active domain.  It is hypervisor-dependent
+     |      whether it also affects persistent configuration; for more control,
+     |      use virDomainSetVcpusFlags().
+     |  
+     |  setVcpusFlags(self, nvcpus, flags)
+     |      Dynamically change the number of virtual CPUs used by the domain.
+     |      Note that this call may fail if the underlying virtualization hypervisor
+     |      does not support it or if growing the number is arbitrarily limited.
+     |      This function may require privileged access to the hypervisor.
+     |      
+     |      @flags may include VIR_DOMAIN_AFFECT_LIVE to affect a running
+     |      domain (which may fail if domain is not active), or
+     |      VIR_DOMAIN_AFFECT_CONFIG to affect the next boot via the XML
+     |      description of the domain.  Both flags may be set.
+     |      If neither flag is specified (that is, @flags is VIR_DOMAIN_AFFECT_CURRENT),
+     |      then an inactive domain modifies persistent setup, while an active domain
+     |      is hypervisor-dependent on whether just live or both live and persistent
+     |      state is changed.
+     |      
+     |      Note that if this call is executed before the guest has finished booting,
+     |      the guest may fail to process the change.
+     |      
+     |      If @flags includes VIR_DOMAIN_VCPU_MAXIMUM, then
+     |      VIR_DOMAIN_AFFECT_LIVE must be clear, and only the maximum virtual
+     |      CPU limit is altered; generally, this value must be less than or
+     |      equal to virConnectGetMaxVcpus().  Otherwise, this call affects the
+     |      current virtual CPU limit, which must be less than or equal to the
+     |      maximum limit.
+     |      
+     |      If @flags includes VIR_DOMAIN_VCPU_GUEST, then the state of processors is
+     |      modified inside the guest instead of the hypervisor. This flag can only
+     |      be used with live guests and is incompatible with VIR_DOMAIN_VCPU_MAXIMUM.
+     |      The usage of this flag may require a guest agent configured.
+     |      
+     |      Not all hypervisors can support all flag combinations.
+     |  
+     |  shutdown(self)
+     |      Shutdown a domain, the domain object is still usable thereafter but
+     |      the domain OS is being stopped. Note that the guest OS may ignore the
+     |      request.  For guests that react to a shutdown request, the differences
+     |      from virDomainDestroy() are that the guests disk storage will be in a
+     |      stable state rather than having the (virtual) power cord pulled, and
+     |      this command returns as soon as the shutdown request is issued rather
+     |      than blocking until the guest is no longer running.
+     |      
+     |      If the domain is transient and has any snapshot metadata (see
+     |      virDomainSnapshotNum()), then that metadata will automatically
+     |      be deleted when the domain quits.
+     |  
+     |  shutdownFlags(self, flags)
+     |      Shutdown a domain, the domain object is still usable thereafter but
+     |      the domain OS is being stopped. Note that the guest OS may ignore the
+     |      request.  For guests that react to a shutdown request, the differences
+     |      from virDomainDestroy() are that the guest's disk storage will be in a
+     |      stable state rather than having the (virtual) power cord pulled, and
+     |      this command returns as soon as the shutdown request is issued rather
+     |      than blocking until the guest is no longer running.
+     |      
+     |      If the domain is transient and has any snapshot metadata (see
+     |      virDomainSnapshotNum()), then that metadata will automatically
+     |      be deleted when the domain quits.
+     |      
+     |      If @flags is set to zero, then the hypervisor will choose the
+     |      method of shutdown it considers best. To have greater control
+     |      pass exactly one of the virDomainShutdownFlagValues.
+     |  
+     |  snapshotCreateXML(self, xmlDesc, flags)
+     |      Creates a new snapshot of a domain based on the snapshot xml
+     |      contained in xmlDesc.
+     |      
+     |      If @flags is 0, the domain can be active, in which case the
+     |      snapshot will be a system checkpoint (both disk state and runtime
+     |      VM state such as RAM contents), where reverting to the snapshot is
+     |      the same as resuming from hibernation (TCP connections may have
+     |      timed out, but everything else picks up where it left off); or
+     |      the domain can be inactive, in which case the snapshot includes
+     |      just the disk state prior to booting.  The newly created snapshot
+     |      becomes current (see virDomainSnapshotCurrent()), and is a child
+     |      of any previous current snapshot.
+     |      
+     |      If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE, then this
+     |      is a request to reinstate snapshot metadata that was previously
+     |      discarded, rather than creating a new snapshot.  This can be used
+     |      to recreate a snapshot hierarchy on a destination, then remove it
+     |      on the source, in order to allow migration (since migration
+     |      normally fails if snapshot metadata still remains on the source
+     |      machine).  When redefining snapshot metadata, the current snapshot
+     |      will not be altered unless the VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT
+     |      flag is also present.  It is an error to request the
+     |      VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT flag without
+     |      VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE.  On some hypervisors,
+     |      redefining an existing snapshot can be used to alter host-specific
+     |      portions of the domain XML to be used during revert (such as
+     |      backing filenames associated with disk devices), but must not alter
+     |      guest-visible layout.  When redefining a snapshot name that does
+     |      not exist, the hypervisor may validate that reverting to the
+     |      snapshot appears to be possible (for example, disk images have
+     |      snapshot contents by the requested name).  Not all hypervisors
+     |      support these flags.
+     |      
+     |      If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, then the
+     |      domain's disk images are modified according to @xmlDesc, but then
+     |      the just-created snapshot has its metadata deleted.  This flag is
+     |      incompatible with VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE.
+     |      
+     |      If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_HALT, then the domain
+     |      will be inactive after the snapshot completes, regardless of whether
+     |      it was active before; otherwise, a running domain will still be
+     |      running after the snapshot.  This flag is invalid on transient domains,
+     |      and is incompatible with VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE.
+     |      
+     |      If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_LIVE, then the domain
+     |      is not paused while creating the snapshot. This increases the size
+     |      of the memory dump file, but reduces downtime of the guest while
+     |      taking the snapshot. Some hypervisors only support this flag during
+     |      external checkpoints.
+     |      
+     |      If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY, then the
+     |      snapshot will be limited to the disks described in @xmlDesc, and no
+     |      VM state will be saved.  For an active guest, the disk image may be
+     |      inconsistent (as if power had been pulled), and specifying this
+     |      with the VIR_DOMAIN_SNAPSHOT_CREATE_HALT flag risks data loss.
+     |      
+     |      If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE, then the
+     |      libvirt will attempt to use guest agent to freeze and thaw all
+     |      file systems in use within domain OS. However, if the guest agent
+     |      is not present, an error is thrown. Moreover, this flag requires
+     |      VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY to be passed as well.
+     |      
+     |      By default, if the snapshot involves external files, and any of the
+     |      destination files already exist as a non-empty regular file, the
+     |      snapshot is rejected to avoid losing contents of those files.
+     |      However, if @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT,
+     |      then the destination files must already exist and contain content
+     |      identical to the source files (this allows a management app to
+     |      pre-create files with relative backing file names, rather than the
+     |      default of creating with absolute backing file names).
+     |      
+     |      Be aware that although libvirt prefers to report errors up front with
+     |      no other effect, some hypervisors have certain types of failures where
+     |      the overall command can easily fail even though the guest configuration
+     |      was partially altered (for example, if a disk snapshot request for two
+     |      disks fails on the second disk, but the first disk alteration cannot be
+     |      rolled back).  If this API call fails, it is therefore normally
+     |      necessary to follow up with virDomainGetXMLDesc() and check each disk
+     |      to determine if any partial changes occurred.  However, if @flags
+     |      contains VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC, then libvirt guarantees
+     |      that this command will not alter any disks unless the entire set of
+     |      changes can be done atomically, making failure recovery simpler (note
+     |      that it is still possible to fail after disks have changed, but only
+     |      in the much rarer cases of running out of memory or disk space).
+     |      
+     |      Some hypervisors may prevent this operation if there is a current
+     |      block copy operation; in that case, use virDomainBlockJobAbort()
+     |      to stop the block copy first.
+     |  
+     |  snapshotCurrent(self, flags)
+     |      Get the current snapshot for a domain, if any.
+     |  
+     |  snapshotListNames(self, flags)
+     |      collect the list of snapshot names for the given domain
+     |  
+     |  snapshotLookupByName(self, name, flags)
+     |      Try to lookup a domain snapshot based on its name.
+     |  
+     |  snapshotNum(self, flags)
+     |      Provides the number of domain snapshots for this domain.
+     |      
+     |      By default, this command covers all snapshots; it is also possible to
+     |      limit things to just snapshots with no parents, when @flags includes
+     |      VIR_DOMAIN_SNAPSHOT_LIST_ROOTS.  Additional filters are provided in
+     |      groups, where each group contains bits that describe mutually exclusive
+     |      attributes of a snapshot, and where all bits within a group describe
+     |      all possible snapshots.  Some hypervisors might reject explicit bits
+     |      from a group where the hypervisor cannot make a distinction.  For a
+     |      group supported by a given hypervisor, the behavior when no bits of a
+     |      group are set is identical to the behavior when all bits in that group
+     |      are set.  When setting bits from more than one group, it is possible to
+     |      select an impossible combination, in that case a hypervisor may return
+     |      either 0 or an error.
+     |      
+     |      The first group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_LEAVES and
+     |      VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES, to filter based on snapshots that
+     |      have no further children (a leaf snapshot).
+     |      
+     |      The next group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_METADATA and
+     |      VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA, for filtering snapshots based on
+     |      whether they have metadata that would prevent the removal of the last
+     |      reference to a domain.
+     |      
+     |      The next group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE,
+     |      VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE, and VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY,
+     |      for filtering snapshots based on what domain state is tracked by the
+     |      snapshot.
+     |      
+     |      The next group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL and
+     |      VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL, for filtering snapshots based on
+     |      whether the snapshot is stored inside the disk images or as
+     |      additional files.
+     |  
+     |  state(self, flags)
+     |      Extract domain state.
+     |  
+     |  suspend(self)
+     |      Suspends an active domain, the process is frozen without further access
+     |      to CPU resources and I/O but the memory used by the domain at the
+     |      hypervisor level will stay allocated. Use virDomainResume() to reactivate
+     |      the domain.
+     |      This function may require privileged access.
+     |      Moreover, suspend may not be supported if domain is in some
+     |      special state like VIR_DOMAIN_PMSUSPENDED.
+     |  
+     |  undefine(self)
+     |      Undefine a domain. If the domain is running, it's converted to
+     |      transient domain, without stopping it. If the domain is inactive,
+     |      the domain configuration is removed.
+     |      
+     |      If the domain has a managed save image (see
+     |      virDomainHasManagedSaveImage()), or if it is inactive and has any
+     |      snapshot metadata (see virDomainSnapshotNum()), then the undefine will
+     |      fail. See virDomainUndefineFlags() for more control.
+     |  
+     |  undefineFlags(self, flags)
+     |      Undefine a domain. If the domain is running, it's converted to
+     |      transient domain, without stopping it. If the domain is inactive,
+     |      the domain configuration is removed.
+     |      
+     |      If the domain has a managed save image (see virDomainHasManagedSaveImage()),
+     |      then including VIR_DOMAIN_UNDEFINE_MANAGED_SAVE in @flags will also remove
+     |      that file, and omitting the flag will cause the undefine process to fail.
+     |      
+     |      If the domain is inactive and has any snapshot metadata (see
+     |      virDomainSnapshotNum()), then including
+     |      VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA in @flags will also remove
+     |      that metadata.  Omitting the flag will cause the undefine of an
+     |      inactive domain to fail.  Active snapshots will retain snapshot
+     |      metadata until the (now-transient) domain halts, regardless of
+     |      whether this flag is present.  On hypervisors where snapshots do
+     |      not use libvirt metadata, this flag has no effect.
+     |  
+     |  updateDeviceFlags(self, xml, flags)
+     |      Change a virtual device on a domain, using the flags parameter
+     |      to control how the device is changed.  VIR_DOMAIN_AFFECT_CURRENT
+     |      specifies that the device change is made based on current domain
+     |      state.  VIR_DOMAIN_AFFECT_LIVE specifies that the device shall be
+     |      changed on the active domain instance only and is not added to the
+     |      persisted domain configuration. VIR_DOMAIN_AFFECT_CONFIG
+     |      specifies that the device shall be changed on the persisted domain
+     |      configuration only.  Note that the target hypervisor must return an
+     |      error if unable to satisfy flags.  E.g. the hypervisor driver will
+     |      return failure if LIVE is specified but it only supports modifying the
+     |      persisted device allocation.
+     |      
+     |      This method is used for actions such changing CDROM/Floppy device
+     |      media, altering the graphics configuration such as password,
+     |      reconfiguring the NIC device backend connectivity, etc.
+     |  
+     |  vcpuPinInfo(self, flags)
+     |      Query the CPU affinity setting of all virtual CPUs of domain
+     |  
+     |  vcpus(self)
+     |      Extract information about virtual CPUs of domain, store it in info array and also in cpumaps if this pointer is'nt None.
+     |  
+     |  vcpusFlags(self, flags)
+     |      Query the number of virtual CPUs used by the domain.  Note that
+     |      this call may fail if the underlying virtualization hypervisor does
+     |      not support it.  This function may require privileged access to the
+     |      hypervisor.
+     |      
+     |      If @flags includes VIR_DOMAIN_AFFECT_LIVE, this will query a
+     |      running domain (which will fail if domain is not active); if
+     |      it includes VIR_DOMAIN_AFFECT_CONFIG, this will query the XML
+     |      description of the domain.  It is an error to set both flags.
+     |      If neither flag is set (that is, VIR_DOMAIN_AFFECT_CURRENT),
+     |      then the configuration queried depends on whether the domain
+     |      is currently running.
+     |      
+     |      If @flags includes VIR_DOMAIN_VCPU_MAXIMUM, then the maximum
+     |      virtual CPU limit is queried.  Otherwise, this call queries the
+     |      current virtual CPU count.
+     |      
+     |      If @flags includes VIR_DOMAIN_VCPU_GUEST, then the state of the processors
+     |      is modified in the guest instead of the hypervisor. This flag is only usable
+     |      on live domains. Guest agent may be needed for this flag to be available.
+    
+    class virDomainSnapshot
+     |  Methods defined here:
+     |  
+     |  __del__(self)
+     |  
+     |  __init__(self, dom, _obj=None)
+     |  
+     |  connect(self)
+     |  
+     |  delete(self, flags)
+     |      Delete the snapshot.
+     |      
+     |      If @flags is 0, then just this snapshot is deleted, and changes
+     |      from this snapshot are automatically merged into children
+     |      snapshots.  If @flags includes VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN,
+     |      then this snapshot and any descendant snapshots are deleted.  If
+     |      @flags includes VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY, then any
+     |      descendant snapshots are deleted, but this snapshot remains.  These
+     |      two flags are mutually exclusive.
+     |      
+     |      If @flags includes VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY, then
+     |      any snapshot metadata tracked by libvirt is removed while keeping
+     |      the snapshot contents intact; if a hypervisor does not require any
+     |      libvirt metadata to track snapshots, then this flag is silently
+     |      ignored.
+     |  
+     |  domain(self)
+     |  
+     |  getConnect(self)
+     |      Get the connection that owns the domain that a snapshot was created for
+     |  
+     |  getDomain(self)
+     |      Get the domain that a snapshot was created for
+     |  
+     |  getName(self)
+     |      Get the public name for that snapshot
+     |  
+     |  getParent(self, flags)
+     |      Get the parent snapshot for @snapshot, if any.
+     |  
+     |  getXMLDesc(self, flags)
+     |      Provide an XML description of the domain snapshot.
+     |      
+     |      No security-sensitive data will be included unless @flags contains
+     |      VIR_DOMAIN_XML_SECURE; this flag is rejected on read-only
+     |      connections.  For this API, @flags should not contain either
+     |      VIR_DOMAIN_XML_INACTIVE or VIR_DOMAIN_XML_UPDATE_CPU.
+     |  
+     |  hasMetadata(self, flags)
+     |      Determine if the given snapshot is associated with libvirt metadata
+     |      that would prevent the deletion of the domain.
+     |  
+     |  isCurrent(self, flags)
+     |      Determine if the given snapshot is the domain's current snapshot.  See
+     |      also virDomainHasCurrentSnapshot().
+     |  
+     |  listAllChildren(self, flags)
+     |      List all child snapshots and returns a list of snapshot objects
+     |  
+     |  listChildrenNames(self, flags)
+     |      collect the list of child snapshot names for the given snapshot
+     |  
+     |  numChildren(self, flags)
+     |      Provides the number of child snapshots for this domain snapshot.
+     |      
+     |      By default, this command covers only direct children; it is also possible
+     |      to expand things to cover all descendants, when @flags includes
+     |      VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS.  Also, some filters are provided in
+     |      groups, where each group contains bits that describe mutually exclusive
+     |      attributes of a snapshot, and where all bits within a group describe
+     |      all possible snapshots.  Some hypervisors might reject explicit bits
+     |      from a group where the hypervisor cannot make a distinction.  For a
+     |      group supported by a given hypervisor, the behavior when no bits of a
+     |      group are set is identical to the behavior when all bits in that group
+     |      are set.  When setting bits from more than one group, it is possible to
+     |      select an impossible combination, in that case a hypervisor may return
+     |      either 0 or an error.
+     |      
+     |      The first group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_LEAVES and
+     |      VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES, to filter based on snapshots that
+     |      have no further children (a leaf snapshot).
+     |      
+     |      The next group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_METADATA and
+     |      VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA, for filtering snapshots based on
+     |      whether they have metadata that would prevent the removal of the last
+     |      reference to a domain.
+     |      
+     |      The next group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE,
+     |      VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE, and VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY,
+     |      for filtering snapshots based on what domain state is tracked by the
+     |      snapshot.
+     |      
+     |      The next group of @flags is VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL and
+     |      VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL, for filtering snapshots based on
+     |      whether the snapshot is stored inside the disk images or as
+     |      additional files.
+     |  
+     |  ref(self)
+     |      Increment the reference count on the snapshot. For each
+     |      additional call to this method, there shall be a corresponding
+     |      call to virDomainSnapshotFree to release the reference count, once
+     |      the caller no longer needs the reference to this object.
+     |      
+     |      This method is typically useful for applications where multiple
+     |      threads are using a connection, and it is required that the
+     |      connection and domain remain open until all threads have finished
+     |      using the snapshot. ie, each new thread using a snapshot would
+     |      increment the reference count.
+    
+    class virInterface
+     |  Methods defined here:
+     |  
+     |  MACString(self)
+     |      Get the MAC for an interface as string. For more information about
+     |      MAC see RFC4122.
+     |  
+     |  XMLDesc(self, flags)
+     |      VIR_INTERFACE_XML_INACTIVE - return the static configuration,
+     |                                        suitable for use redefining the
+     |                                        interface via virInterfaceDefineXML()
+     |      
+     |      Provide an XML description of the interface. If
+     |      VIR_INTERFACE_XML_INACTIVE is set, the description may be reused
+     |      later to redefine the interface with virInterfaceDefineXML(). If it
+     |      is not set, the ip address and netmask will be the current live
+     |      setting of the interface, not the settings from the config files.
+     |  
+     |  __del__(self)
+     |  
+     |  __init__(self, conn, _obj=None)
+     |  
+     |  connect(self)
+     |  
+     |  create(self, flags)
+     |      Activate an interface (i.e. call "ifup").
+     |      
+     |      If there was an open network config transaction at the time this
+     |      interface was defined (that is, if virInterfaceChangeBegin() had
+     |      been called), the interface will be brought back down (and then
+     |      undefined) if virInterfaceChangeRollback() is called.
+     |      p *
+     |  
+     |  destroy(self, flags)
+     |      deactivate an interface (ie call "ifdown")
+     |      This does not remove the interface from the config, and
+     |      does not free the associated virInterfacePtr object.
+     |      
+     |      If there is an open network config transaction at the time this
+     |      interface is destroyed (that is, if virInterfaceChangeBegin() had
+     |      been called), and if the interface is later undefined and then
+     |      virInterfaceChangeRollback() is called, the restoral of the
+     |      interface definition will also bring the interface back up.
+     |  
+     |  isActive(self)
+     |      Determine if the interface is currently running
+     |  
+     |  name(self)
+     |      Get the public name for that interface
+     |  
+     |  undefine(self)
+     |      Undefine an interface, ie remove it from the config.
+     |      This does not free the associated virInterfacePtr object.
+     |      
+     |      Normally this change in the interface configuration is
+     |      permanent/persistent, but if virInterfaceChangeBegin() has been
+     |      previously called (i.e. if an interface config transaction is
+     |      open), the removal of the interface definition will only become
+     |      permanent if virInterfaceChangeCommit() is called prior to the next
+     |      reboot of the system running libvirtd. Prior to that time, the
+     |      definition can be explicitly restored using
+     |      virInterfaceChangeRollback(), or will be automatically restored
+     |      during the next reboot of the system running libvirtd.
+    
+    class virNWFilter
+     |  Methods defined here:
+     |  
+     |  UUID(self)
+     |      Extract the UUID unique Identifier of a network filter.
+     |  
+     |  UUIDString(self)
+     |      Fetch globally unique ID of the network filter as a string.
+     |  
+     |  XMLDesc(self, flags)
+     |      Provide an XML description of the network filter. The description may be
+     |      reused later to redefine the network filter with virNWFilterCreateXML().
+     |  
+     |  __del__(self)
+     |  
+     |  __init__(self, conn, _obj=None)
+     |  
+     |  connect(self)
+     |  
+     |  name(self)
+     |      Get the public name for the network filter
+     |  
+     |  undefine(self)
+     |      Undefine the nwfilter object. This call will not succeed if
+     |      a running VM is referencing the filter. This does not free the
+     |      associated virNWFilterPtr object.
+    
+    class virNetwork
+     |  Methods defined here:
+     |  
+     |  UUID(self)
+     |      Extract the UUID unique Identifier of a network.
+     |  
+     |  UUIDString(self)
+     |      Fetch globally unique ID of the network as a string.
+     |  
+     |  XMLDesc(self, flags)
+     |      Provide an XML description of the network. The description may be reused
+     |      later to relaunch the network with virNetworkCreateXML().
+     |      
+     |      Normally, if a network included a physical function, the output includes
+     |      all virtual functions tied to that physical interface.  If @flags includes
+     |      VIR_NETWORK_XML_INACTIVE, then the expansion of virtual interfaces is
+     |      not performed.
+     |  
+     |  __del__(self)
+     |  
+     |  __init__(self, conn, _obj=None)
+     |  
+     |  autostart(self)
+     |      Extract the autostart flag for a network.
+     |  
+     |  bridgeName(self)
+     |      Provides a bridge interface name to which a domain may connect
+     |      a network interface in order to join the network.
+     |  
+     |  connect(self)
+     |  
+     |  create(self)
+     |      Create and start a defined network. If the call succeed the network
+     |      moves from the defined to the running networks pools.
+     |  
+     |  destroy(self)
+     |      Destroy the network object. The running instance is shutdown if not down
+     |      already and all resources used by it are given back to the hypervisor. This
+     |      does not free the associated virNetworkPtr object.
+     |      This function may require privileged access
+     |  
+     |  isActive(self)
+     |      Determine if the network is currently running
+     |  
+     |  isPersistent(self)
+     |      Determine if the network has a persistent configuration
+     |      which means it will still exist after shutting down
+     |  
+     |  name(self)
+     |      Get the public name for that network
+     |  
+     |  setAutostart(self, autostart)
+     |      Configure the network to be automatically started
+     |      when the host machine boots.
+     |  
+     |  undefine(self)
+     |      Undefine a network but does not stop it if it is running
+     |  
+     |  update(self, command, section, parentIndex, xml, flags)
+     |      Update the definition of an existing network, either its live
+     |      running state, its persistent configuration, or both.
+    
+    class virNodeDevice
+     |  Methods defined here:
+     |  
+     |  XMLDesc(self, flags)
+     |      Fetch an XML document describing all aspects of
+     |      the device.
+     |  
+     |  __del__(self)
+     |  
+     |  __init__(self, conn, _obj=None)
+     |  
+     |  connect(self)
+     |  
+     |  destroy(self)
+     |      Destroy the device object. The virtual device is removed from the host operating system.
+     |      This function may require privileged access
+     |  
+     |  dettach(self)
+     |      Dettach the node device from the node itself so that it may be
+     |      assigned to a guest domain.
+     |      
+     |      Depending on the hypervisor, this may involve operations such
+     |      as unbinding any device drivers from the device, binding the
+     |      device to a dummy device driver and resetting the device.
+     |      
+     |      If the device is currently in use by the node, this method may
+     |      fail.
+     |      
+     |      Once the device is not assigned to any guest, it may be re-attached
+     |      to the node using the virNodeDeviceReattach() method.
+     |  
+     |  listCaps(self)
+     |      list the node device's capabilities
+     |  
+     |  name(self)
+     |      Just return the device name
+     |  
+     |  numOfCaps(self)
+     |      Accessor for the number of capabilities supported by the device.
+     |  
+     |  parent(self)
+     |      Accessor for the parent of the device
+     |  
+     |  reAttach(self)
+     |      Re-attach a previously dettached node device to the node so that it
+     |      may be used by the node again.
+     |      
+     |      Depending on the hypervisor, this may involve operations such
+     |      as resetting the device, unbinding it from a dummy device driver
+     |      and binding it to its appropriate driver.
+     |      
+     |      If the device is currently in use by a guest, this method may fail.
+     |  
+     |  reset(self)
+     |      Reset a previously dettached node device to the node before or
+     |      after assigning it to a guest.
+     |      
+     |      The exact reset semantics depends on the hypervisor and device
+     |      type but, for example, KVM will attempt to reset PCI devices with
+     |      a Function Level Reset, Secondary Bus Reset or a Power Management
+     |      D-State reset.
+     |      
+     |      If the reset will affect other devices which are currently in use,
+     |      this function may fail.
+    
+    class virSecret
+     |  Methods defined here:
+     |  
+     |  UUID(self)
+     |      Extract the UUID unique Identifier of a secret.
+     |  
+     |  UUIDString(self)
+     |      Fetch globally unique ID of the secret as a string.
+     |  
+     |  XMLDesc(self, flags)
+     |      Fetches an XML document describing attributes of the secret.
+     |  
+     |  __del__(self)
+     |  
+     |  __init__(self, conn, _obj=None)
+     |  
+     |  connect(self)
+     |  
+     |  setValue(self, value, flags)
+     |      Associates a value with a secret.
+     |  
+     |  undefine(self)
+     |      Deletes the specified secret.  This does not free the associated
+     |      virSecretPtr object.
+     |  
+     |  usageID(self)
+     |      Get the unique identifier of the object with which this
+     |      secret is to be used. The format of the identifier is
+     |      dependant on the usage type of the secret. For a secret
+     |      with a usage type of VIR_SECRET_USAGE_TYPE_VOLUME the
+     |      identifier will be a fully qualfied path name. The
+     |      identifiers are intended to be unique within the set of
+     |      all secrets sharing the same usage type. ie, there shall
+     |      only ever be one secret for each volume path.
+     |  
+     |  usageType(self)
+     |      Get the type of object which uses this secret. The returned
+     |      value is one of the constants defined in the virSecretUsageType
+     |      enumeration. More values may be added to this enumeration in
+     |      the future, so callers should expect to see usage types they
+     |      do not explicitly know about.
+     |  
+     |  value(self, flags)
+     |      Fetches the value associated with a secret.
+    
+    class virStoragePool
+     |  Methods defined here:
+     |  
+     |  UUID(self)
+     |      Extract the UUID unique Identifier of a storage pool.
+     |  
+     |  UUIDString(self)
+     |      Fetch globally unique ID of the storage pool as a string.
+     |  
+     |  XMLDesc(self, flags)
+     |      Fetch an XML document describing all aspects of the
+     |      storage pool. This is suitable for later feeding back
+     |      into the virStoragePoolCreateXML method.
+     |  
+     |  __del__(self)
+     |  
+     |  __init__(self, conn, _obj=None)
+     |  
+     |  autostart(self)
+     |      Extract the autostart flag for a storage pool
+     |  
+     |  build(self, flags)
+     |      Currently only filesystem pool accepts flags VIR_STORAGE_POOL_BUILD_OVERWRITE
+     |      and VIR_STORAGE_POOL_BUILD_NO_OVERWRITE.
+     |      
+     |      Build the underlying storage pool
+     |  
+     |  connect(self)
+     |  
+     |  create(self, flags)
+     |      Starts an inactive storage pool
+     |  
+     |  createXML(self, xmldesc, flags)
+     |      Create a storage volume within a pool based
+     |      on an XML description. Not all pools support
+     |      creation of volumes
+     |  
+     |  createXMLFrom(self, xmldesc, clonevol, flags)
+     |      Create a storage volume in the parent pool, using the
+     |      'clonevol' volume as input. Information for the new
+     |      volume (name, perms)  are passed via a typical volume
+     |      XML description.
+     |  
+     |  delete(self, flags)
+     |      Delete the underlying pool resources. This is
+     |      a non-recoverable operation. The virStoragePoolPtr object
+     |      itself is not free'd.
+     |  
+     |  destroy(self)
+     |      Destroy an active storage pool. This will deactivate the
+     |      pool on the host, but keep any persistent config associated
+     |      with it. If it has a persistent config it can later be
+     |      restarted with virStoragePoolCreate(). This does not free
+     |      the associated virStoragePoolPtr object.
+     |  
+     |  info(self)
+     |      Extract information about a storage pool. Note that if the connection used to get the domain is limited only a partial set of the information can be extracted.
+     |  
+     |  isActive(self)
+     |      Determine if the storage pool is currently running
+     |  
+     |  isPersistent(self)
+     |      Determine if the storage pool has a persistent configuration
+     |      which means it will still exist after shutting down
+     |  
+     |  listVolumes(self)
+     |      list the storage volumes, stores the pointers to the names in @names
+     |  
+     |  name(self)
+     |      Fetch the locally unique name of the storage pool
+     |  
+     |  numOfVolumes(self)
+     |      Fetch the number of storage volumes within a pool
+     |  
+     |  refresh(self, flags)
+     |      Request that the pool refresh its list of volumes. This may
+     |      involve communicating with a remote server, and/or initializing
+     |      new devices at the OS layer
+     |  
+     |  setAutostart(self, autostart)
+     |      Sets the autostart flag
+     |  
+     |  storageVolLookupByName(self, name)
+     |      Fetch a pointer to a storage volume based on its name
+     |      within a pool
+     |  
+     |  undefine(self)
+     |      Undefine an inactive storage pool
+    
+    class virStorageVol
+     |  Methods defined here:
+     |  
+     |  XMLDesc(self, flags)
+     |      Fetch an XML document describing all aspects of
+     |      the storage volume
+     |  
+     |  __del__(self)
+     |  
+     |  __init__(self, conn, _obj=None)
+     |  
+     |  connect(self)
+     |  
+     |  delete(self, flags)
+     |      Delete the storage volume from the pool
+     |  
+     |  download(self, stream, offset, length, flags)
+     |      Download the content of the volume as a stream. If @length
+     |      is zero, then the remaining contents of the volume after
+     |      @offset will be downloaded.
+     |      
+     |      This call sets up an asynchronous stream; subsequent use of
+     |      stream APIs is necessary to transfer the actual data,
+     |      determine how much data is successfully transferred, and
+     |      detect any errors. The results will be unpredictable if
+     |      another active stream is writing to the storage volume.
+     |  
+     |  info(self)
+     |      Extract information about a storage volume. Note that if the connection used to get the domain is limited only a partial set of the information can be extracted.
+     |  
+     |  key(self)
+     |      Fetch the storage volume key. This is globally
+     |      unique, so the same volume will have the same
+     |      key no matter what host it is accessed from
+     |  
+     |  name(self)
+     |      Fetch the storage volume name. This is unique
+     |      within the scope of a pool
+     |  
+     |  path(self)
+     |      Fetch the storage volume path. Depending on the pool
+     |      configuration this is either persistent across hosts,
+     |      or dynamically assigned at pool startup. Consult
+     |      pool documentation for information on getting the
+     |      persistent naming
+     |  
+     |  resize(self, capacity, flags)
+     |      Changes the capacity of the storage volume @vol to @capacity. The
+     |      operation will fail if the new capacity requires allocation that would
+     |      exceed the remaining free space in the parent pool.  The contents of
+     |      the new capacity will appear as all zero bytes. The capacity value will
+     |      be rounded to the granularity supported by the hypervisor.
+     |      
+     |      Normally, the operation will attempt to affect capacity with a minimum
+     |      impact on allocation (that is, the default operation favors a sparse
+     |      resize).  If @flags contains VIR_STORAGE_VOL_RESIZE_ALLOCATE, then the
+     |      operation will ensure that allocation is sufficient for the new
+     |      capacity; this may make the operation take noticeably longer.
+     |      
+     |      Normally, the operation treats @capacity as the new size in bytes;
+     |      but if @flags contains VIR_STORAGE_VOL_RESIZE_DELTA, then @capacity
+     |      represents the size difference to add to the current size.  It is
+     |      up to the storage pool implementation whether unaligned requests are
+     |      rounded up to the next valid boundary, or rejected.
+     |      
+     |      Normally, this operation should only be used to enlarge capacity;
+     |      but if @flags contains VIR_STORAGE_VOL_RESIZE_SHRINK, it is possible to
+     |      attempt a reduction in capacity even though it might cause data loss.
+     |      If VIR_STORAGE_VOL_RESIZE_DELTA is also present, then @capacity is
+     |      subtracted from the current size; without it, @capacity represents
+     |      the absolute new size regardless of whether it is larger or smaller
+     |      than the current size.
+     |  
+     |  storagePoolLookupByVolume(self)
+     |      Fetch a storage pool which contains a particular volume
+     |  
+     |  upload(self, stream, offset, length, flags)
+     |      Upload new content to the volume from a stream. This call
+     |      will fail if @offset + @length exceeds the size of the
+     |      volume. Otherwise, if @length is non-zero, an error
+     |      will be raised if an attempt is made to upload greater
+     |      than @length bytes of data.
+     |      
+     |      This call sets up an asynchronous stream; subsequent use of
+     |      stream APIs is necessary to transfer the actual data,
+     |      determine how much data is successfully transferred, and
+     |      detect any errors. The results will be unpredictable if
+     |      another active stream is writing to the storage volume.
+     |  
+     |  wipe(self, flags)
+     |      Ensure data previously on a volume is not accessible to future reads
+     |  
+     |  wipePattern(self, algorithm, flags)
+     |      Similar to virStorageVolWipe, but one can choose
+     |      between different wiping algorithms.
+    
+    class virStream
+     |  Methods defined here:
+     |  
+     |  __del__(self)
+     |      # virStream methods from virStream.py (hand coded)
+     |  
+     |  __init__(self, conn, _obj=None)
+     |  
+     |  abort(self)
+     |      Request that the in progress data transfer be cancelled
+     |      abnormally before the end of the stream has been reached.
+     |      For output streams this can be used to inform the driver
+     |      that the stream is being terminated early. For input
+     |      streams this can be used to inform the driver that it
+     |      should stop sending data.
+     |  
+     |  connect(self)
+     |  
+     |  download(self, vol, offset, length, flags)
+     |      Download the content of the volume as a stream. If @length
+     |      is zero, then the remaining contents of the volume after
+     |      @offset will be downloaded.
+     |      
+     |      This call sets up an asynchronous stream; subsequent use of
+     |      stream APIs is necessary to transfer the actual data,
+     |      determine how much data is successfully transferred, and
+     |      detect any errors. The results will be unpredictable if
+     |      another active stream is writing to the storage volume.
+     |  
+     |  eventAddCallback(self, events, cb, opaque)
+     |  
+     |  eventRemoveCallback(self)
+     |      Remove an event callback from the stream
+     |  
+     |  eventUpdateCallback(self, events)
+     |      Changes the set of events to monitor for a stream. This allows
+     |      for event notification to be changed without having to
+     |      unregister & register the callback completely. This method
+     |      is guaranteed to succeed if a callback is already registered
+     |  
+     |  finish(self)
+     |      Indicate that there is no further data is to be transmitted
+     |      on the stream. For output streams this should be called once
+     |      all data has been written. For input streams this should be
+     |      called once virStreamRecv returns end-of-file.
+     |      
+     |      This method is a synchronization point for all asynchronous
+     |      errors, so if this returns a success code the application can
+     |      be sure that all data has been successfully processed.
+     |  
+     |  recv(self, nbytes)
+     |      Reads a series of bytes from the stream. This method may
+     |      block the calling application for an arbitrary amount
+     |      of time.
+     |      
+     |      Errors are not guaranteed to be reported synchronously
+     |      with the call, but may instead be delayed until a
+     |      subsequent call.
+     |      
+     |      On success, the received data is returned. On failure, an
+     |      exception is raised. If the stream is a NONBLOCK stream and
+     |      the request would block, integer -2 is returned.
+     |  
+     |  recvAll(self, handler, opaque)
+     |      Receive the entire data stream, sending the data to the
+     |      requested data sink. This is simply a convenient alternative
+     |      to virStreamRecv, for apps that do blocking-I/o.
+     |      
+     |      A hypothetical handler function looks like:
+     |      
+     |          def handler(stream, # virStream instance
+     |                      buf,    # string containing received data
+     |                      opaque): # extra data passed to recvAll as opaque
+     |              fd = opaque
+     |              return os.write(fd, buf)
+     |  
+     |  screenshot(self, domain, screen, flags)
+     |      Take a screenshot of current domain console as a stream. The image format
+     |      is hypervisor specific. Moreover, some hypervisors supports multiple
+     |      displays per domain. These can be distinguished by @screen argument.
+     |      
+     |      This call sets up a stream; subsequent use of stream API is necessary
+     |      to transfer actual data, determine how much data is successfully
+     |      transfered, and detect any errors.
+     |      
+     |      The screen ID is the sequential number of screen. In case of multiple
+     |      graphics cards, heads are enumerated before devices, e.g. having
+     |      two graphics cards, both with four heads, screen ID 5 addresses
+     |      the second head on the second card.
+     |  
+     |  send(self, data)
+     |      Write a series of bytes to the stream. This method may
+     |      block the calling application for an arbitrary amount
+     |      of time. Once an application has finished sending data
+     |      it should call virStreamFinish to wait for successful
+     |      confirmation from the driver, or detect any error
+     |      
+     |      This method may not be used if a stream source has been
+     |      registered
+     |      
+     |      Errors are not guaranteed to be reported synchronously
+     |      with the call, but may instead be delayed until a
+     |      subsequent call.
+     |  
+     |  sendAll(self, handler, opaque)
+     |      Send the entire data stream, reading the data from the
+     |      requested data source. This is simply a convenient alternative
+     |      to virStreamSend, for apps that do blocking-I/o.
+     |      
+     |      A hypothetical handler function looks like:
+     |      
+     |          def handler(stream, # virStream instance
+     |                      nbytes, # int amt of data to read
+     |                      opaque): # extra data passed to recvAll as opaque
+     |              fd = opaque
+     |              return os.read(fd, nbytes)
+     |  
+     |  upload(self, vol, offset, length, flags)
+     |      Upload new content to the volume from a stream. This call
+     |      will fail if @offset + @length exceeds the size of the
+     |      volume. Otherwise, if @length is non-zero, an error
+     |      will be raised if an attempt is made to upload greater
+     |      than @length bytes of data.
+     |      
+     |      This call sets up an asynchronous stream; subsequent use of
+     |      stream APIs is necessary to transfer the actual data,
+     |      determine how much data is successfully transferred, and
+     |      detect any errors. The results will be unpredictable if
+     |      another active stream is writing to the storage volume.
+
+FUNCTIONS
+    getVersion(name=None)
+        If no name parameter is passed (or name is None) then the
+        version of the libvirt library is returned as an integer.
+        
+        If a name is passed and it refers to a driver linked to the
+        libvirt library, then this returns a tuple of (library version,
+        driver version).
+        
+        If the name passed refers to a non-existent driver, then you
+        will get the exception 'no support for hypervisor'.
+        
+        Versions numbers are integers: 1000000*major + 1000*minor + release.
+    
+    open(name)
+        This function should be called first to get a connection to the
+        Hypervisor and xen store
+    
+    openAuth(uri, auth, flags)
+    
+    openReadOnly(name)
+        This function should be called first to get a restricted connection to the
+        library functionalities. The set of APIs usable are then restricted
+        on the available methods to control the domains.
+        
+        See virConnectOpen for notes about environment variables which can
+        have an effect on opening drivers
+    
+    registerErrorHandler(f, ctx)
+        Register a Python function for error reporting.
+        The function is called back as f(ctx, error), with error
+        being a list of information about the error being raised.
+        Returns 1 in case of success.
+    
+    virEventAddHandle(fd, events, cb, opaque)
+        register a callback for monitoring file handle events
+        
+        @fd: file handle to monitor for events
+        @events: bitset of events to watch from virEventHandleType constants
+        @cb: callback to invoke when an event occurs
+        @opaque: user data to pass to callback
+        
+        Example callback prototype is:
+            def cb(watch,   # int id of the handle
+                   fd,      # int file descriptor the event occurred on
+                   events,  # int bitmap of events that have occurred
+                   opaque): # opaque data passed to eventAddHandle
+    
+    virEventAddTimeout(timeout, cb, opaque)
+        register a callback for a timer event
+        
+        @timeout: time between events in milliseconds
+        @cb: callback to invoke when an event occurs
+        @opaque: user data to pass to callback
+        
+        Setting timeout to -1 will disable the timer. Setting the timeout
+        to zero will cause it to fire on every event loop iteration.
+        
+        Example callback prototype is:
+            def cb(timer,   # int id of the timer
+                   opaque): # opaque data passed to eventAddTimeout
+    
+    virEventRegisterDefaultImpl()
+        Registers a default event implementation based on the
+        poll() system call. This is a generic implementation
+        that can be used by any client application which does
+        not have a need to integrate with an external event
+        loop impl.
+        
+        Once registered, the application has to invoke virEventRunDefaultImpl in
+        a loop to process events.  Failure to do so may result in connections being
+        closed unexpectedly as a result of keepalive timeout.
+    
+    virEventRegisterImpl(addHandle, updateHandle, removeHandle, addTimeout, updateTimeout, removeTimeout)
+        Registers an event implementation, to allow integration
+        with an external event loop. Applications would use this
+        to integrate with the libglib2 event loop, or libevent
+        or the QT event loop.
+        
+        If an application does not need to integrate with an
+        existing event loop implementation, then the
+        virEventRegisterDefaultImpl method can be used to setup
+        the generic libvirt implementation.
+    
+    virEventRemoveHandle(watch)
+    
+    virEventRemoveTimeout(timer)
+    
+    virEventRunDefaultImpl()
+        Run one iteration of the event loop. Applications
+        will generally want to have a thread which invokes
+        this method in an infinite loop
+        
+         static bool quit = false;
+        
+         while (!quit) {
+           if (virEventRunDefaultImpl() < 0)
+              ...print error...
+         }
+    
+    virEventUpdateHandle(watch, events)
+    
+    virEventUpdateTimeout(timer, timeout)
+    
+    virGetLastError()
+        Provide a pointer to the last error caught at the library level
+        
+        The error object is kept in thread local storage, so separate
+        threads can safely access this concurrently.
+    
+    virInitialize()
+        Initialize the library. It's better to call this routine at startup
+        in multithreaded applications to avoid potential race when initializing
+        the library.
+        
+        Calling virInitialize is mandatory, unless your first API call is one of
+        virConnectOpen*.
+    
+    virResetLastError()
+        Reset the last error caught at the library level.
+        
+        The error object is kept in thread local storage, so separate
+        threads can safely access this concurrently, only resetting
+        their own error object.
+
+DATA
+    VIR_CONNECT_CLOSE_REASON_CLIENT = 3
+    VIR_CONNECT_CLOSE_REASON_EOF = 1
+    VIR_CONNECT_CLOSE_REASON_ERROR = 0
+    VIR_CONNECT_CLOSE_REASON_KEEPALIVE = 2
+    VIR_CONNECT_LIST_DOMAINS_ACTIVE = 1
+    VIR_CONNECT_LIST_DOMAINS_AUTOSTART = 1024
+    VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT = 4096
+    VIR_CONNECT_LIST_DOMAINS_INACTIVE = 2
+    VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE = 256
+    VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART = 2048
+    VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE = 512
+    VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT = 8192
+    VIR_CONNECT_LIST_DOMAINS_OTHER = 128
+    VIR_CONNECT_LIST_DOMAINS_PAUSED = 32
+    VIR_CONNECT_LIST_DOMAINS_PERSISTENT = 4
+    VIR_CONNECT_LIST_DOMAINS_RUNNING = 16
+    VIR_CONNECT_LIST_DOMAINS_SHUTOFF = 64
+    VIR_CONNECT_LIST_DOMAINS_TRANSIENT = 8
+    VIR_CONNECT_LIST_INTERFACES_ACTIVE = 2
+    VIR_CONNECT_LIST_INTERFACES_INACTIVE = 1
+    VIR_CONNECT_LIST_NETWORKS_ACTIVE = 2
+    VIR_CONNECT_LIST_NETWORKS_AUTOSTART = 16
+    VIR_CONNECT_LIST_NETWORKS_INACTIVE = 1
+    VIR_CONNECT_LIST_NETWORKS_NO_AUTOSTART = 32
+    VIR_CONNECT_LIST_NETWORKS_PERSISTENT = 4
+    VIR_CONNECT_LIST_NETWORKS_TRANSIENT = 8
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_NET = 16
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_PCI_DEV = 2
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI = 128
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_HOST = 32
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_TARGET = 64
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE = 256
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM = 1
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_DEV = 4
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_INTERFACE = 8
+    VIR_CONNECT_LIST_SECRETS_EPHEMERAL = 1
+    VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL = 2
+    VIR_CONNECT_LIST_SECRETS_NO_PRIVATE = 8
+    VIR_CONNECT_LIST_SECRETS_PRIVATE = 4
+    VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE = 2
+    VIR_CONNECT_LIST_STORAGE_POOLS_AUTOSTART = 16
+    VIR_CONNECT_LIST_STORAGE_POOLS_DIR = 64
+    VIR_CONNECT_LIST_STORAGE_POOLS_DISK = 1024
+    VIR_CONNECT_LIST_STORAGE_POOLS_FS = 128
+    VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE = 1
+    VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI = 2048
+    VIR_CONNECT_LIST_STORAGE_POOLS_LOGICAL = 512
+    VIR_CONNECT_LIST_STORAGE_POOLS_MPATH = 8192
+    VIR_CONNECT_LIST_STORAGE_POOLS_NETFS = 256
+    VIR_CONNECT_LIST_STORAGE_POOLS_NO_AUTOSTART = 32
+    VIR_CONNECT_LIST_STORAGE_POOLS_PERSISTENT = 4
+    VIR_CONNECT_LIST_STORAGE_POOLS_RBD = 16384
+    VIR_CONNECT_LIST_STORAGE_POOLS_SCSI = 4096
+    VIR_CONNECT_LIST_STORAGE_POOLS_SHEEPDOG = 32768
+    VIR_CONNECT_LIST_STORAGE_POOLS_TRANSIENT = 8
+    VIR_CONNECT_NO_ALIASES = 2
+    VIR_CONNECT_RO = 1
+    VIR_CPU_COMPARE_ERROR = -1
+    VIR_CPU_COMPARE_IDENTICAL = 1
+    VIR_CPU_COMPARE_INCOMPATIBLE = 0
+    VIR_CPU_COMPARE_SUPERSET = 2
+    VIR_CRED_AUTHNAME = 2
+    VIR_CRED_CNONCE = 4
+    VIR_CRED_ECHOPROMPT = 6
+    VIR_CRED_EXTERNAL = 9
+    VIR_CRED_LANGUAGE = 3
+    VIR_CRED_NOECHOPROMPT = 7
+    VIR_CRED_PASSPHRASE = 5
+    VIR_CRED_REALM = 8
+    VIR_CRED_USERNAME = 1
+    VIR_DOMAIN_AFFECT_CONFIG = 2
+    VIR_DOMAIN_AFFECT_CURRENT = 0
+    VIR_DOMAIN_AFFECT_LIVE = 1
+    VIR_DOMAIN_BLKIO_PARAM_BOOLEAN = 6
+    VIR_DOMAIN_BLKIO_PARAM_DOUBLE = 5
+    VIR_DOMAIN_BLKIO_PARAM_INT = 1
+    VIR_DOMAIN_BLKIO_PARAM_LLONG = 3
+    VIR_DOMAIN_BLKIO_PARAM_UINT = 2
+    VIR_DOMAIN_BLKIO_PARAM_ULLONG = 4
+    VIR_DOMAIN_BLOCKED = 2
+    VIR_DOMAIN_BLOCKED_UNKNOWN = 0
+    VIR_DOMAIN_BLOCK_COMMIT_DELETE = 2
+    VIR_DOMAIN_BLOCK_COMMIT_SHALLOW = 1
+    VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC = 1
+    VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT = 2
+    VIR_DOMAIN_BLOCK_JOB_CANCELED = 2
+    VIR_DOMAIN_BLOCK_JOB_COMPLETED = 0
+    VIR_DOMAIN_BLOCK_JOB_FAILED = 1
+    VIR_DOMAIN_BLOCK_JOB_READY = 3
+    VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT = 3
+    VIR_DOMAIN_BLOCK_JOB_TYPE_COPY = 2
+    VIR_DOMAIN_BLOCK_JOB_TYPE_PULL = 1
+    VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN = 0
+    VIR_DOMAIN_BLOCK_REBASE_COPY = 8
+    VIR_DOMAIN_BLOCK_REBASE_COPY_RAW = 4
+    VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT = 2
+    VIR_DOMAIN_BLOCK_REBASE_SHALLOW = 1
+    VIR_DOMAIN_BLOCK_RESIZE_BYTES = 1
+    VIR_DOMAIN_CONSOLE_FORCE = 1
+    VIR_DOMAIN_CONSOLE_SAFE = 2
+    VIR_DOMAIN_CONTROL_ERROR = 3
+    VIR_DOMAIN_CONTROL_JOB = 1
+    VIR_DOMAIN_CONTROL_OCCUPIED = 2
+    VIR_DOMAIN_CONTROL_OK = 0
+    VIR_DOMAIN_CRASHED = 6
+    VIR_DOMAIN_CRASHED_PANICKED = 1
+    VIR_DOMAIN_CRASHED_UNKNOWN = 0
+    VIR_DOMAIN_DESTROY_DEFAULT = 0
+    VIR_DOMAIN_DESTROY_GRACEFUL = 1
+    VIR_DOMAIN_DEVICE_MODIFY_CONFIG = 2
+    VIR_DOMAIN_DEVICE_MODIFY_CURRENT = 0
+    VIR_DOMAIN_DEVICE_MODIFY_FORCE = 4
+    VIR_DOMAIN_DEVICE_MODIFY_LIVE = 1
+    VIR_DOMAIN_DISK_ERROR_NONE = 0
+    VIR_DOMAIN_DISK_ERROR_NO_SPACE = 2
+    VIR_DOMAIN_DISK_ERROR_UNSPEC = 1
+    VIR_DOMAIN_EVENT_CRASHED = 8
+    VIR_DOMAIN_EVENT_CRASHED_PANICKED = 0
+    VIR_DOMAIN_EVENT_DEFINED = 0
+    VIR_DOMAIN_EVENT_DEFINED_ADDED = 0
+    VIR_DOMAIN_EVENT_DEFINED_UPDATED = 1
+    VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START = 0
+    VIR_DOMAIN_EVENT_DISK_DROP_MISSING_ON_START = 1
+    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV4 = 0
+    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV6 = 1
+    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_UNIX = 2
+    VIR_DOMAIN_EVENT_GRAPHICS_CONNECT = 0
+    VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT = 2
+    VIR_DOMAIN_EVENT_GRAPHICS_INITIALIZE = 1
+    VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE = 13
+    VIR_DOMAIN_EVENT_ID_BLOCK_JOB = 8
+    VIR_DOMAIN_EVENT_ID_CONTROL_ERROR = 7
+    VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED = 15
+    VIR_DOMAIN_EVENT_ID_DISK_CHANGE = 9
+    VIR_DOMAIN_EVENT_ID_GRAPHICS = 5
+    VIR_DOMAIN_EVENT_ID_IO_ERROR = 4
+    VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON = 6
+    VIR_DOMAIN_EVENT_ID_LIFECYCLE = 0
+    VIR_DOMAIN_EVENT_ID_PMSUSPEND = 12
+    VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK = 14
+    VIR_DOMAIN_EVENT_ID_PMWAKEUP = 11
+    VIR_DOMAIN_EVENT_ID_REBOOT = 1
+    VIR_DOMAIN_EVENT_ID_RTC_CHANGE = 2
+    VIR_DOMAIN_EVENT_ID_TRAY_CHANGE = 10
+    VIR_DOMAIN_EVENT_ID_WATCHDOG = 3
+    VIR_DOMAIN_EVENT_IO_ERROR_NONE = 0
+    VIR_DOMAIN_EVENT_IO_ERROR_PAUSE = 1
+    VIR_DOMAIN_EVENT_IO_ERROR_REPORT = 2
+    VIR_DOMAIN_EVENT_PMSUSPENDED = 7
+    VIR_DOMAIN_EVENT_PMSUSPENDED_DISK = 1
+    VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY = 0
+    VIR_DOMAIN_EVENT_RESUMED = 4
+    VIR_DOMAIN_EVENT_RESUMED_FROM_SNAPSHOT = 2
+    VIR_DOMAIN_EVENT_RESUMED_MIGRATED = 1
+    VIR_DOMAIN_EVENT_RESUMED_UNPAUSED = 0
+    VIR_DOMAIN_EVENT_SHUTDOWN = 6
+    VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED = 0
+    VIR_DOMAIN_EVENT_STARTED = 2
+    VIR_DOMAIN_EVENT_STARTED_BOOTED = 0
+    VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT = 3
+    VIR_DOMAIN_EVENT_STARTED_MIGRATED = 1
+    VIR_DOMAIN_EVENT_STARTED_RESTORED = 2
+    VIR_DOMAIN_EVENT_STARTED_WAKEUP = 4
+    VIR_DOMAIN_EVENT_STOPPED = 5
+    VIR_DOMAIN_EVENT_STOPPED_CRASHED = 2
+    VIR_DOMAIN_EVENT_STOPPED_DESTROYED = 1
+    VIR_DOMAIN_EVENT_STOPPED_FAILED = 5
+    VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT = 6
+    VIR_DOMAIN_EVENT_STOPPED_MIGRATED = 3
+    VIR_DOMAIN_EVENT_STOPPED_SAVED = 4
+    VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN = 0
+    VIR_DOMAIN_EVENT_SUSPENDED = 3
+    VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR = 6
+    VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT = 5
+    VIR_DOMAIN_EVENT_SUSPENDED_IOERROR = 2
+    VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED = 1
+    VIR_DOMAIN_EVENT_SUSPENDED_PAUSED = 0
+    VIR_DOMAIN_EVENT_SUSPENDED_RESTORED = 4
+    VIR_DOMAIN_EVENT_SUSPENDED_WATCHDOG = 3
+    VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE = 1
+    VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN = 0
+    VIR_DOMAIN_EVENT_UNDEFINED = 1
+    VIR_DOMAIN_EVENT_UNDEFINED_REMOVED = 0
+    VIR_DOMAIN_EVENT_WATCHDOG_DEBUG = 5
+    VIR_DOMAIN_EVENT_WATCHDOG_NONE = 0
+    VIR_DOMAIN_EVENT_WATCHDOG_PAUSE = 1
+    VIR_DOMAIN_EVENT_WATCHDOG_POWEROFF = 3
+    VIR_DOMAIN_EVENT_WATCHDOG_RESET = 2
+    VIR_DOMAIN_EVENT_WATCHDOG_SHUTDOWN = 4
+    VIR_DOMAIN_JOB_BOUNDED = 1
+    VIR_DOMAIN_JOB_CANCELLED = 5
+    VIR_DOMAIN_JOB_COMPLETED = 3
+    VIR_DOMAIN_JOB_FAILED = 4
+    VIR_DOMAIN_JOB_NONE = 0
+    VIR_DOMAIN_JOB_UNBOUNDED = 2
+    VIR_DOMAIN_MEMORY_PARAM_BOOLEAN = 6
+    VIR_DOMAIN_MEMORY_PARAM_DOUBLE = 5
+    VIR_DOMAIN_MEMORY_PARAM_INT = 1
+    VIR_DOMAIN_MEMORY_PARAM_LLONG = 3
+    VIR_DOMAIN_MEMORY_PARAM_UINT = 2
+    VIR_DOMAIN_MEMORY_PARAM_ULLONG = 4
+    VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON = 6
+    VIR_DOMAIN_MEMORY_STAT_AVAILABLE = 5
+    VIR_DOMAIN_MEMORY_STAT_MAJOR_FAULT = 2
+    VIR_DOMAIN_MEMORY_STAT_MINOR_FAULT = 3
+    VIR_DOMAIN_MEMORY_STAT_NR = 8
+    VIR_DOMAIN_MEMORY_STAT_RSS = 7
+    VIR_DOMAIN_MEMORY_STAT_SWAP_IN = 0
+    VIR_DOMAIN_MEMORY_STAT_SWAP_OUT = 1
+    VIR_DOMAIN_MEMORY_STAT_UNUSED = 4
+    VIR_DOMAIN_MEM_CONFIG = 2
+    VIR_DOMAIN_MEM_CURRENT = 0
+    VIR_DOMAIN_MEM_LIVE = 1
+    VIR_DOMAIN_MEM_MAXIMUM = 4
+    VIR_DOMAIN_METADATA_DESCRIPTION = 0
+    VIR_DOMAIN_METADATA_ELEMENT = 2
+    VIR_DOMAIN_METADATA_TITLE = 1
+    VIR_DOMAIN_NONE = 0
+    VIR_DOMAIN_NOSTATE = 0
+    VIR_DOMAIN_NOSTATE_UNKNOWN = 0
+    VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE = 2
+    VIR_DOMAIN_NUMATUNE_MEM_PREFERRED = 1
+    VIR_DOMAIN_NUMATUNE_MEM_STRICT = 0
+    VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH = 1
+    VIR_DOMAIN_PAUSED = 3
+    VIR_DOMAIN_PAUSED_CRASHED = 10
+    VIR_DOMAIN_PAUSED_DUMP = 4
+    VIR_DOMAIN_PAUSED_FROM_SNAPSHOT = 7
+    VIR_DOMAIN_PAUSED_IOERROR = 5
+    VIR_DOMAIN_PAUSED_MIGRATION = 2
+    VIR_DOMAIN_PAUSED_SAVE = 3
+    VIR_DOMAIN_PAUSED_SHUTTING_DOWN = 8
+    VIR_DOMAIN_PAUSED_SNAPSHOT = 9
+    VIR_DOMAIN_PAUSED_UNKNOWN = 0
+    VIR_DOMAIN_PAUSED_USER = 1
+    VIR_DOMAIN_PAUSED_WATCHDOG = 6
+    VIR_DOMAIN_PMSUSPENDED = 7
+    VIR_DOMAIN_PMSUSPENDED_DISK_UNKNOWN = 0
+    VIR_DOMAIN_PMSUSPENDED_UNKNOWN = 0
+    VIR_DOMAIN_REBOOT_ACPI_POWER_BTN = 1
+    VIR_DOMAIN_REBOOT_DEFAULT = 0
+    VIR_DOMAIN_REBOOT_GUEST_AGENT = 2
+    VIR_DOMAIN_RUNNING = 1
+    VIR_DOMAIN_RUNNING_BOOTED = 1
+    VIR_DOMAIN_RUNNING_CRASHED = 9
+    VIR_DOMAIN_RUNNING_FROM_SNAPSHOT = 4
+    VIR_DOMAIN_RUNNING_MIGRATED = 2
+    VIR_DOMAIN_RUNNING_MIGRATION_CANCELED = 6
+    VIR_DOMAIN_RUNNING_RESTORED = 3
+    VIR_DOMAIN_RUNNING_SAVE_CANCELED = 7
+    VIR_DOMAIN_RUNNING_UNKNOWN = 0
+    VIR_DOMAIN_RUNNING_UNPAUSED = 5
+    VIR_DOMAIN_RUNNING_WAKEUP = 8
+    VIR_DOMAIN_SAVE_BYPASS_CACHE = 1
+    VIR_DOMAIN_SAVE_PAUSED = 4
+    VIR_DOMAIN_SAVE_RUNNING = 2
+    VIR_DOMAIN_SCHED_FIELD_BOOLEAN = 6
+    VIR_DOMAIN_SCHED_FIELD_DOUBLE = 5
+    VIR_DOMAIN_SCHED_FIELD_INT = 1
+    VIR_DOMAIN_SCHED_FIELD_LLONG = 3
+    VIR_DOMAIN_SCHED_FIELD_UINT = 2
+    VIR_DOMAIN_SCHED_FIELD_ULLONG = 4
+    VIR_DOMAIN_SHUTDOWN = 4
+    VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN = 1
+    VIR_DOMAIN_SHUTDOWN_DEFAULT = 0
+    VIR_DOMAIN_SHUTDOWN_GUEST_AGENT = 2
+    VIR_DOMAIN_SHUTDOWN_UNKNOWN = 0
+    VIR_DOMAIN_SHUTDOWN_USER = 1
+    VIR_DOMAIN_SHUTOFF = 5
+    VIR_DOMAIN_SHUTOFF_CRASHED = 3
+    VIR_DOMAIN_SHUTOFF_DESTROYED = 2
+    VIR_DOMAIN_SHUTOFF_FAILED = 6
+    VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT = 7
+    VIR_DOMAIN_SHUTOFF_MIGRATED = 4
+    VIR_DOMAIN_SHUTOFF_SAVED = 5
+    VIR_DOMAIN_SHUTOFF_SHUTDOWN = 1
+    VIR_DOMAIN_SHUTOFF_UNKNOWN = 0
+    VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC = 128
+    VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT = 2
+    VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY = 16
+    VIR_DOMAIN_SNAPSHOT_CREATE_HALT = 8
+    VIR_DOMAIN_SNAPSHOT_CREATE_LIVE = 256
+    VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA = 4
+    VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE = 64
+    VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE = 1
+    VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT = 32
+    VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN = 1
+    VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY = 4
+    VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY = 2
+    VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE = 64
+    VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS = 1
+    VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY = 128
+    VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL = 512
+    VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE = 32
+    VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL = 256
+    VIR_DOMAIN_SNAPSHOT_LIST_LEAVES = 4
+    VIR_DOMAIN_SNAPSHOT_LIST_METADATA = 2
+    VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES = 8
+    VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA = 16
+    VIR_DOMAIN_SNAPSHOT_LIST_ROOTS = 1
+    VIR_DOMAIN_SNAPSHOT_REVERT_FORCE = 4
+    VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED = 2
+    VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING = 1
+    VIR_DOMAIN_START_AUTODESTROY = 2
+    VIR_DOMAIN_START_BYPASS_CACHE = 4
+    VIR_DOMAIN_START_FORCE_BOOT = 8
+    VIR_DOMAIN_START_PAUSED = 1
+    VIR_DOMAIN_UNDEFINE_MANAGED_SAVE = 1
+    VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA = 2
+    VIR_DOMAIN_VCPU_CONFIG = 2
+    VIR_DOMAIN_VCPU_CURRENT = 0
+    VIR_DOMAIN_VCPU_GUEST = 8
+    VIR_DOMAIN_VCPU_LIVE = 1
+    VIR_DOMAIN_VCPU_MAXIMUM = 4
+    VIR_DOMAIN_XML_INACTIVE = 2
+    VIR_DOMAIN_XML_MIGRATABLE = 8
+    VIR_DOMAIN_XML_SECURE = 1
+    VIR_DOMAIN_XML_UPDATE_CPU = 4
+    VIR_DUMP_BYPASS_CACHE = 4
+    VIR_DUMP_CRASH = 1
+    VIR_DUMP_LIVE = 2
+    VIR_DUMP_MEMORY_ONLY = 16
+    VIR_DUMP_RESET = 8
+    VIR_ERR_AGENT_UNRESPONSIVE = 86
+    VIR_ERR_ARGUMENT_UNSUPPORTED = 74
+    VIR_ERR_AUTH_CANCELLED = 79
+    VIR_ERR_AUTH_FAILED = 45
+    VIR_ERR_BLOCK_COPY_ACTIVE = 83
+    VIR_ERR_BUILD_FIREWALL = 63
+    VIR_ERR_CALL_FAILED = 26
+    VIR_ERR_CONFIG_UNSUPPORTED = 67
+    VIR_ERR_CONF_SYNTAX = 33
+    VIR_ERR_DOM_EXIST = 28
+    VIR_ERR_DRIVER_FULL = 25
+    VIR_ERR_ERROR = 2
+    VIR_ERR_GET_FAILED = 10
+    VIR_ERR_GNUTLS_ERROR = 40
+    VIR_ERR_HOOK_SCRIPT_FAILED = 70
+    VIR_ERR_HTTP_ERROR = 12
+    VIR_ERR_INTERNAL_ERROR = 1
+    VIR_ERR_INVALID_ARG = 8
+    VIR_ERR_INVALID_CONN = 6
+    VIR_ERR_INVALID_DOMAIN = 7
+    VIR_ERR_INVALID_DOMAIN_SNAPSHOT = 71
+    VIR_ERR_INVALID_INTERFACE = 58
+    VIR_ERR_INVALID_MAC = 44
+    VIR_ERR_INVALID_NETWORK = 36
+    VIR_ERR_INVALID_NODE_DEVICE = 52
+    VIR_ERR_INVALID_NWFILTER = 61
+    VIR_ERR_INVALID_SECRET = 65
+    VIR_ERR_INVALID_STORAGE_POOL = 46
+    VIR_ERR_INVALID_STORAGE_VOL = 47
+    VIR_ERR_INVALID_STREAM = 73
+    VIR_ERR_MIGRATE_PERSIST_FAILED = 69
+    VIR_ERR_MIGRATE_UNSAFE = 81
+    VIR_ERR_MULTIPLE_INTERFACES = 59
+    VIR_ERR_NETWORK_EXIST = 37
+    VIR_ERR_NONE = 0
+    VIR_ERR_NO_CONNECT = 5
+    VIR_ERR_NO_DEVICE = 23
+    VIR_ERR_NO_DOMAIN = 42
+    VIR_ERR_NO_DOMAIN_METADATA = 80
+    VIR_ERR_NO_DOMAIN_SNAPSHOT = 72
+    VIR_ERR_NO_INTERFACE = 57
+    VIR_ERR_NO_KERNEL = 17
+    VIR_ERR_NO_MEMORY = 2
+    VIR_ERR_NO_NAME = 21
+    VIR_ERR_NO_NETWORK = 43
+    VIR_ERR_NO_NODE_DEVICE = 53
+    VIR_ERR_NO_NWFILTER = 62
+    VIR_ERR_NO_OS = 22
+    VIR_ERR_NO_ROOT = 18
+    VIR_ERR_NO_SECRET = 66
+    VIR_ERR_NO_SECURITY_MODEL = 54
+    VIR_ERR_NO_SOURCE = 19
+    VIR_ERR_NO_STORAGE_POOL = 49
+    VIR_ERR_NO_STORAGE_VOL = 50
+    VIR_ERR_NO_SUPPORT = 3
+    VIR_ERR_NO_TARGET = 20
+    VIR_ERR_NO_XEN = 14
+    VIR_ERR_NO_XENSTORE = 24
+    VIR_ERR_OK = 0
+    VIR_ERR_OPEN_FAILED = 30
+    VIR_ERR_OPERATION_ABORTED = 78
+    VIR_ERR_OPERATION_DENIED = 29
+    VIR_ERR_OPERATION_FAILED = 9
+    VIR_ERR_OPERATION_INVALID = 55
+    VIR_ERR_OPERATION_TIMEOUT = 68
+    VIR_ERR_OPERATION_UNSUPPORTED = 84
+    VIR_ERR_OS_TYPE = 16
+    VIR_ERR_OVERFLOW = 82
+    VIR_ERR_PARSE_FAILED = 32
+    VIR_ERR_POST_FAILED = 11
+    VIR_ERR_READ_FAILED = 31
+    VIR_ERR_RPC = 39
+    VIR_ERR_SEXPR_SERIAL = 13
+    VIR_ERR_SNAPSHOT_REVERT_RISKY = 77
+    VIR_ERR_SSH = 85
+    VIR_ERR_STORAGE_POOL_BUILT = 76
+    VIR_ERR_STORAGE_PROBE_FAILED = 75
+    VIR_ERR_SYSTEM_ERROR = 38
+    VIR_ERR_UNKNOWN_HOST = 4
+    VIR_ERR_WARNING = 1
+    VIR_ERR_WRITE_FAILED = 34
+    VIR_ERR_XEN_CALL = 15
+    VIR_ERR_XML_DETAIL = 35
+    VIR_ERR_XML_ERROR = 27
+    VIR_EVENT_HANDLE_ERROR = 4
+    VIR_EVENT_HANDLE_HANGUP = 8
+    VIR_EVENT_HANDLE_READABLE = 1
+    VIR_EVENT_HANDLE_WRITABLE = 2
+    VIR_FROM_AUDIT = 36
+    VIR_FROM_AUTH = 46
+    VIR_FROM_CAPABILITIES = 44
+    VIR_FROM_CONF = 9
+    VIR_FROM_CPU = 31
+    VIR_FROM_DBUS = 47
+    VIR_FROM_DEVICE = 49
+    VIR_FROM_DOM = 6
+    VIR_FROM_DOMAIN = 20
+    VIR_FROM_DOMAIN_SNAPSHOT = 35
+    VIR_FROM_ESX = 28
+    VIR_FROM_EVENT = 40
+    VIR_FROM_HOOK = 34
+    VIR_FROM_HYPERV = 43
+    VIR_FROM_INTERFACE = 26
+    VIR_FROM_LIBXL = 41
+    VIR_FROM_LOCKING = 42
+    VIR_FROM_LXC = 17
+    VIR_FROM_NET = 11
+    VIR_FROM_NETWORK = 19
+    VIR_FROM_NODEDEV = 22
+    VIR_FROM_NONE = 0
+    VIR_FROM_NWFILTER = 33
+    VIR_FROM_ONE = 27
+    VIR_FROM_OPENVZ = 14
+    VIR_FROM_PARALLELS = 48
+    VIR_FROM_PHYP = 29
+    VIR_FROM_PROXY = 8
+    VIR_FROM_QEMU = 10
+    VIR_FROM_REMOTE = 13
+    VIR_FROM_RPC = 7
+    VIR_FROM_SECRET = 30
+    VIR_FROM_SECURITY = 24
+    VIR_FROM_SEXPR = 4
+    VIR_FROM_SSH = 50
+    VIR_FROM_STATS_LINUX = 16
+    VIR_FROM_STORAGE = 18
+    VIR_FROM_STREAMS = 38
+    VIR_FROM_SYSINFO = 37
+    VIR_FROM_TEST = 12
+    VIR_FROM_UML = 21
+    VIR_FROM_URI = 45
+    VIR_FROM_VBOX = 25
+    VIR_FROM_VMWARE = 39
+    VIR_FROM_XEN = 1
+    VIR_FROM_XENAPI = 32
+    VIR_FROM_XEND = 2
+    VIR_FROM_XENSTORE = 3
+    VIR_FROM_XENXM = 15
+    VIR_FROM_XEN_INOTIFY = 23
+    VIR_FROM_XML = 5
+    VIR_INTERFACE_XML_INACTIVE = 1
+    VIR_KEYCODE_SET_ATSET1 = 2
+    VIR_KEYCODE_SET_ATSET2 = 3
+    VIR_KEYCODE_SET_ATSET3 = 4
+    VIR_KEYCODE_SET_LINUX = 0
+    VIR_KEYCODE_SET_OSX = 5
+    VIR_KEYCODE_SET_RFB = 9
+    VIR_KEYCODE_SET_USB = 7
+    VIR_KEYCODE_SET_WIN32 = 8
+    VIR_KEYCODE_SET_XT = 1
+    VIR_KEYCODE_SET_XT_KBD = 6
+    VIR_MEMORY_PHYSICAL = 2
+    VIR_MEMORY_VIRTUAL = 1
+    VIR_MIGRATE_ABORT_ON_ERROR = 4096
+    VIR_MIGRATE_CHANGE_PROTECTION = 256
+    VIR_MIGRATE_LIVE = 1
+    VIR_MIGRATE_NON_SHARED_DISK = 64
+    VIR_MIGRATE_NON_SHARED_INC = 128
+    VIR_MIGRATE_PAUSED = 32
+    VIR_MIGRATE_PEER2PEER = 2
+    VIR_MIGRATE_PERSIST_DEST = 8
+    VIR_MIGRATE_TUNNELLED = 4
+    VIR_MIGRATE_UNDEFINE_SOURCE = 16
+    VIR_MIGRATE_UNSAFE = 512
+    VIR_NETWORK_SECTION_BRIDGE = 1
+    VIR_NETWORK_SECTION_DNS_HOST = 10
+    VIR_NETWORK_SECTION_DNS_SRV = 12
+    VIR_NETWORK_SECTION_DNS_TXT = 11
+    VIR_NETWORK_SECTION_DOMAIN = 2
+    VIR_NETWORK_SECTION_FORWARD = 6
+    VIR_NETWORK_SECTION_FORWARD_INTERFACE = 7
+    VIR_NETWORK_SECTION_FORWARD_PF = 8
+    VIR_NETWORK_SECTION_IP = 3
+    VIR_NETWORK_SECTION_IP_DHCP_HOST = 4
+    VIR_NETWORK_SECTION_IP_DHCP_RANGE = 5
+    VIR_NETWORK_SECTION_NONE = 0
+    VIR_NETWORK_SECTION_PORTGROUP = 9
+    VIR_NETWORK_UPDATE_AFFECT_CONFIG = 2
+    VIR_NETWORK_UPDATE_AFFECT_CURRENT = 0
+    VIR_NETWORK_UPDATE_AFFECT_LIVE = 1
+    VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST = 4
+    VIR_NETWORK_UPDATE_COMMAND_DELETE = 2
+    VIR_NETWORK_UPDATE_COMMAND_MODIFY = 1
+    VIR_NETWORK_UPDATE_COMMAND_NONE = 0
+    VIR_NETWORK_XML_INACTIVE = 1
+    VIR_NODE_CPU_STATS_ALL_CPUS = -1
+    VIR_NODE_MEMORY_STATS_ALL_CELLS = -1
+    VIR_NODE_SUSPEND_TARGET_DISK = 1
+    VIR_NODE_SUSPEND_TARGET_HYBRID = 2
+    VIR_NODE_SUSPEND_TARGET_MEM = 0
+    VIR_SECRET_USAGE_TYPE_CEPH = 2
+    VIR_SECRET_USAGE_TYPE_NONE = 0
+    VIR_SECRET_USAGE_TYPE_VOLUME = 1
+    VIR_STORAGE_POOL_BUILDING = 1
+    VIR_STORAGE_POOL_BUILD_NEW = 0
+    VIR_STORAGE_POOL_BUILD_NO_OVERWRITE = 4
+    VIR_STORAGE_POOL_BUILD_OVERWRITE = 8
+    VIR_STORAGE_POOL_BUILD_REPAIR = 1
+    VIR_STORAGE_POOL_BUILD_RESIZE = 2
+    VIR_STORAGE_POOL_DEGRADED = 3
+    VIR_STORAGE_POOL_DELETE_NORMAL = 0
+    VIR_STORAGE_POOL_DELETE_ZEROED = 1
+    VIR_STORAGE_POOL_INACCESSIBLE = 4
+    VIR_STORAGE_POOL_INACTIVE = 0
+    VIR_STORAGE_POOL_RUNNING = 2
+    VIR_STORAGE_VOL_BLOCK = 1
+    VIR_STORAGE_VOL_DELETE_NORMAL = 0
+    VIR_STORAGE_VOL_DELETE_ZEROED = 1
+    VIR_STORAGE_VOL_DIR = 2
+    VIR_STORAGE_VOL_FILE = 0
+    VIR_STORAGE_VOL_NETWORK = 3
+    VIR_STORAGE_VOL_RESIZE_ALLOCATE = 1
+    VIR_STORAGE_VOL_RESIZE_DELTA = 2
+    VIR_STORAGE_VOL_RESIZE_SHRINK = 4
+    VIR_STORAGE_VOL_WIPE_ALG_BSI = 3
+    VIR_STORAGE_VOL_WIPE_ALG_DOD = 2
+    VIR_STORAGE_VOL_WIPE_ALG_GUTMANN = 4
+    VIR_STORAGE_VOL_WIPE_ALG_NNSA = 1
+    VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33 = 7
+    VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7 = 6
+    VIR_STORAGE_VOL_WIPE_ALG_RANDOM = 8
+    VIR_STORAGE_VOL_WIPE_ALG_SCHNEIER = 5
+    VIR_STORAGE_VOL_WIPE_ALG_ZERO = 0
+    VIR_STORAGE_XML_INACTIVE = 1
+    VIR_STREAM_EVENT_ERROR = 4
+    VIR_STREAM_EVENT_HANGUP = 8
+    VIR_STREAM_EVENT_READABLE = 1
+    VIR_STREAM_EVENT_WRITABLE = 2
+    VIR_STREAM_NONBLOCK = 1
+    VIR_TYPED_PARAM_BOOLEAN = 6
+    VIR_TYPED_PARAM_DOUBLE = 5
+    VIR_TYPED_PARAM_INT = 1
+    VIR_TYPED_PARAM_LLONG = 3
+    VIR_TYPED_PARAM_STRING = 7
+    VIR_TYPED_PARAM_STRING_OKAY = 4
+    VIR_TYPED_PARAM_UINT = 2
+    VIR_TYPED_PARAM_ULLONG = 4
+    VIR_VCPU_BLOCKED = 2
+    VIR_VCPU_OFFLINE = 0
+    VIR_VCPU_RUNNING = 1
+    VIR_WAR_NO_INTERFACE = 56
+    VIR_WAR_NO_NETWORK = 41
+    VIR_WAR_NO_NODE = 51
+    VIR_WAR_NO_NWFILTER = 60
+    VIR_WAR_NO_SECRET = 64
+    VIR_WAR_NO_STORAGE = 48
+
+
