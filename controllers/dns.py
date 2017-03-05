@@ -30,16 +30,6 @@ class dns:
             ops dns del_record -d domain --ri record_id -t dnspod 删除公网dns
 
 
-
-
-            私网dns 支持多机房 支持dnsmasq(私网通信尽量跟公网用不同域名 比如公网meizu.com 私网可用meizu.internal)
-
-            ops dns list_domains_internal 获取私网域名列表
-            ops dns add_record_internal -d test.domain.internal --rt A -c 10.3.134.111 -h 10.4.1.3 添加私网dns
-            ops dns edit_record_internal -d test.domain.internal --rt A -c 10.3.134.111 -h 10.4.1.3 添加私网dns
-            ops dns del_record_internal -d test.domain.internal --rt A -c 10.3.134.111 -h 10.4.1.3 添加私网dns
-
-
         '''
         return h
 
@@ -160,6 +150,7 @@ class dns:
             except Exception as e:
                 log_error(e)
                 raise Exception(e)
+
         elif t == 'dnspod':
             try:
                 dp = Dnspod()
@@ -171,15 +162,3 @@ class dns:
             except Exception as e:
                 log_error(e)
                 raise Exception(e)
-
-    def list_domains_internal(self, req, resp):
-        pass
-
-    def add_record_internal(self, req, resp):
-        pass
-
-    def edit_record_internal(self, req, resp):
-        pass
-
-    def del_record_internal(self, req, resp):
-        pass
